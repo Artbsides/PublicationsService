@@ -3,8 +3,6 @@
 SHELL  = /bin/bash
 PYTHON = /usr/bin/python3
 
-PYTHON_VERSION = 3.12.3
-
 
 -include .env
 export
@@ -37,12 +35,12 @@ help:
 version:  ## Read or update app version - Parameters: update-to=[0-9].[0-9].[0-9]
 	@poetry version $(if $(update-to), $(update-to), -s)
 
-code-convention:  ## Run code convention - Parameters: fix-imports=true, github=true
-	poetry run ruff check . $(if $(filter "$(github)", "true"),--output-format github,)
-	poetry run isort $(if $(filter "$(fix-imports)", "true"),,--check) . -q
-
-run:  ## Run simulator
-	@poetry run python app/main.py
+run:  ## Run dockerized api - Parameters: dockerized=true
+	@if [ "$(dockerized)" = "true" ]; then
+		docker compose up api
+	else
+		poetry run uvicorn app.main:app --host ${APP_HOST:-127.0.0.1} --port ${APP_HOST_PORT:-8000} --reload
+	fi
 
 
 %:
