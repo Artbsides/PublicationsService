@@ -21,6 +21,8 @@ dist
 *.bkp
 *Zone.Identifier
 
+.infrastructure/docker/volumes
+
 #
 # IGNORE EXCEPTIONS
 #
