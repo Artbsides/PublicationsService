@@ -4,7 +4,7 @@ from sqlalchemy import DateTime, Enum, Index, Integer, String, Text, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from app.shared_resources.enums import OutboxEventEnum
+from app.shared_resources.enums import OutboxEventStatusEnum
 
 
 class BaseModel(DeclarativeBase):
@@ -42,9 +42,9 @@ class OutboxEvent(BaseModel):
         JSONB, nullable=False
     )
 
-    status: Mapped[OutboxEventEnum] = mapped_column(
-        Enum(OutboxEventEnum, name="outbox_event_status"), nullable=False, index=True, server_default=text(
-            f"'{OutboxEventEnum.PENDING.value}'"
+    status: Mapped[OutboxEventStatusEnum] = mapped_column(
+        Enum(OutboxEventStatusEnum, name="outbox_event_status"), nullable=False, index=True, server_default=text(
+            f"'{OutboxEventStatusEnum.PENDING.value}'"
         )
     )
 

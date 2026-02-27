@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import insert
 
+from app.modules.publications.v1.entities.upload import UploadEntity
 from app.modules.publications.v1.models.uploads import UploadModel
 from app.shared_resources.models import OutboxEvent
 from app.shared_resources.repositories import BaseRepository
@@ -10,7 +11,7 @@ from app.shared_resources.repositories import BaseRepository
 class PublicationRepository(BaseRepository):
     async def create_upload(
         self, *, original_filename: str, storage_key: str, content_type: str, size_bytes: int
-    ) -> UploadModel:
+    ) -> UploadEntity:
         query = (
             insert(UploadModel).values(
                 original_filename=original_filename,
@@ -23,11 +24,13 @@ class PublicationRepository(BaseRepository):
 
         query_result = await self.session.execute(query)
 
-        return query_result.scalar_one()
+        return UploadEntity(
+            **query_result.scalar_one().__dict__
+        )
 
     async def create_outbox(
         self, *, aggregate_id: UUID, event_type: str, payload: dict, aggregate_type: str = "upload"
-    ) -> OutboxEvent:
+    ) -> None:
         query = (
             insert(OutboxEvent).values(
                 aggregate_type=aggregate_type,
@@ -38,9 +41,7 @@ class PublicationRepository(BaseRepository):
             .returning(OutboxEvent)
         )
 
-        query_result = await self.session.execute(query)
-
-        return query_result.scalar_one()
+        await self.session.execute(query)
 
     async def create_publications(self) -> None:
         query = ()

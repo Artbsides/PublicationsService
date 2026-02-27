@@ -1,7 +1,7 @@
 from sqlalchemy import Enum, Integer, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.modules.publications.v1.enums.upload import UploadEnum
+from app.modules.publications.v1.enums.upload import UploadStatusEnum
 from app.shared_resources.models import BaseModel
 
 
@@ -24,9 +24,9 @@ class UploadModel(BaseModel):
         Integer, nullable=False
     )
 
-    status: Mapped[UploadEnum] = mapped_column(
-        Enum(UploadEnum, name="upload_status"), nullable=False, index=True, server_default=text(
-            f"'{UploadEnum.PENDING.value}'"
+    status: Mapped[UploadStatusEnum] = mapped_column(
+        Enum(UploadStatusEnum, name="upload_status"), nullable=False, index=True, server_default=text(
+            f"'{UploadStatusEnum.PENDING.value}'"
         )
     )
 

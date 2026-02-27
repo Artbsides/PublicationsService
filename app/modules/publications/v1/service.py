@@ -54,7 +54,7 @@ class PublicationService:
                 },
             )
 
-        return {"upload_id": upload.id, "status": upload.status}
+        return {"id": upload.id, "status": upload.status}
 
     async def read(self) -> None:
         return await self.publication_repository.read()

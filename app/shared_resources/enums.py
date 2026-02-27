@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class OutboxEventEnum(str, Enum):
+class OutboxEventStatusEnum(str, Enum):
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     COMPLETED = "COMPLETED"

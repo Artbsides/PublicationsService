@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class UploadEnum(str, Enum):
+class UploadStatusEnum(str, Enum):
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     COMPLETED = "COMPLETED"
