@@ -57,7 +57,7 @@ database-seeds:  ## Run seeds on dockerized postgres database - Parameters: dock
 	$$DOCKER_COMPOSE $$POETRY_RUN python seeds/main.py > /dev/null 2>&1 || true
 
 bucket:  ## Run dockerized bucket message broker
-	@docker compose --project-directory $(DOCKER_PATH) up minio --wait
+	@docker compose --project-directory $(DOCKER_PATH) up minio minio-buckets --wait
 
 message-broker:  ## Run dockerized rabbitmq message broker
 	@docker compose --project-directory $(DOCKER_PATH) up rabbitmq --wait
@@ -66,7 +66,7 @@ run:  ## Run dockerized api - Parameters: dockerized=true
 	@if [ "$(dockerized)" = "true" ]; then
 		docker compose up api
 	else
-		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_HOST_PORT:-8000} --reload
+		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_PORT:-8000} --reload
 	fi
 
 

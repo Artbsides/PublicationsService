@@ -36,8 +36,8 @@ RUN rm requirements.txt
 USER appuser
 
 ENV APP_HOST=${APP_HOST:-0.0.0.0} \
-    APP_HOST_PORT=${APP_HOST_PORT:-8000}
+    APP_PORT=${APP_PORT:-8000}
 
 ENV PYTHONPATH=/app
 
-CMD ["sh", "-c", "uvicorn app.main:app --host=${APP_HOST} --port=${APP_HOST_PORT} --workers=4 --loop uvloop --http httptools"]
+CMD ["sh", "-c", "uvicorn app.main:app --host=${APP_HOST} --port=${APP_PORT} --workers=4 --loop uvloop --http httptools"]

@@ -3,6 +3,18 @@ from prettyconf import config
 
 
 class BaseConfig:
+    APP_HOST = config("APP_HOST",
+        default="127.0.0.1", cast=str
+    )
+
+    APP_PORT = config("APP_PORT",
+        default="8000", cast=str
+    )
+
+    APP_PREFIX = config("APP_PREFIX",
+        default="", cast=str
+    )
+
     APP_DEBUG = config("DEBUG",
         default=False, cast=config.boolean
     )
@@ -11,15 +23,7 @@ class BaseConfig:
         default="tests", cast=str
     )
 
-    APP_HOST = config("APP_HOST",
-        default="127.0.0.1", cast=str
-    )
-
-    APP_HOST_PORT = config("APP_HOST_PORT",
-        default="8000", cast=str
-    )
-
-    APP_PREFIX = config("APP_PREFIX",
+    DATABASE_HOST = config("DATABASE_HOST",
         default="", cast=str
     )
 
@@ -27,15 +31,35 @@ class BaseConfig:
         default="5432", cast=str
     )
 
-    DATABASE_HOST = config("DATABASE_HOST",
-        default="", cast=str
-    )
-
     DATABASE_NAME = config("DATABASE_NAME",
         default="", cast=str
     )
 
     DATABASE_PARAMETERS = config("DATABASE_PARAMETERS",
+        default="", cast=str
+    )
+
+    DATABASE_USER = config("DATABASE_USER",
+        default="", cast=str
+    )
+
+    DATABASE_PASSWORD = config("DATABASE_PASSWORD",
+        default="", cast=str
+    )
+
+    MINIO_HOST = config("MINIO_HOST",
+        default="", cast=str
+    )
+
+    MINIO_ROOT_USER = config("MINIO_ROOT_USER",
+        default="", cast=str
+    )
+
+    MINIO_ROOT_PASSWORD = config("MINIO_ROOT_PASSWORD",
+        default="", cast=str
+    )
+
+    MINIO_BUCKET = config("MINIO_BUCKET",
         default="", cast=str
     )
 

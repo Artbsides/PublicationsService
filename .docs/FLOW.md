@@ -9,6 +9,17 @@
 - Retorna `upload_id`.
 - Não publica mensagem diretamente.
 
+Recebe arquivo
+Valida (content-type + nome .zip)
+Gera upload_id e object_key determinístico
+Envia para bucket
+
+Abre transação DB
+Salva uploads + outbox_events na mesma transação
+Commit
+Retorna 202 Accepted
+
+
 ## 2. Processamento assíncrono (ingestion worker)
 
 - Worker faz polling em `uploads` com status `pending`.
@@ -40,4 +51,3 @@
   - referência ao arquivo original,
   - resumo dos artigos processados,
   - estado dos eventos (outbox/publicação).
-
