@@ -5,6 +5,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from app.shared_resources.models import *
+from app.modules.publications.v1.models.uploads import *
+from app.modules.publications.v1.models.publications import *
+
 from app.confs.environment import settings
 from app.shared_resources.models import BaseModel
 
@@ -54,6 +58,8 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
+        compare_server_default=True,
     )
 
     with context.begin_transaction():

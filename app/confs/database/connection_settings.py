@@ -10,7 +10,7 @@ def get_database_connection_string() -> str:
         f"{settings.DATABASE_NAME}"
     )
 
-    return f"postgresql+asyncpg://{uri}?{settings.DATABASE_PARAMETERS}"
+    return f"postgresql+psycopg://{uri}?{settings.DATABASE_PARAMETERS}"
 
 
 def get_engine_settings() -> dict[str, Any]:

@@ -26,11 +26,11 @@ class BaseModel(DeclarativeBase):
 class OutboxEvent(BaseModel):
     __tablename__ = "outbox_events"
 
-    aggregate_type: Mapped[str] = mapped_column(
-        String(100), nullable=False
+    aggregate_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False
     )
 
-    aggregate_id: Mapped[str] = mapped_column(
+    aggregate_type: Mapped[str] = mapped_column(
         String(100), nullable=False
     )
 
@@ -43,7 +43,9 @@ class OutboxEvent(BaseModel):
     )
 
     status: Mapped[OutboxEventEnum] = mapped_column(
-        Enum(OutboxEventEnum), nullable=False, index=True, server_default=text(f"'{OutboxEventEnum.PENDING.value}'")
+        Enum(OutboxEventEnum, name="outbox_event_status"), nullable=False, index=True, server_default=text(
+            f"'{OutboxEventEnum.PENDING.value}'"
+        )
     )
 
     retry_count: Mapped[int] = mapped_column(

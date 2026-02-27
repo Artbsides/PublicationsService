@@ -20,9 +20,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Upgrade schema."""
-    op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
+    op.execute('CREATE EXTENSION IF NOT EXISTS pgcrypto;')
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.execute("DROP EXTENSION IF EXISTS pgcrypto;")
+    op.execute('DROP EXTENSION IF EXISTS pgcrypto;')

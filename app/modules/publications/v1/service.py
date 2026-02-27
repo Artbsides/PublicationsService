@@ -24,8 +24,7 @@ class PublicationService:
         self.publication_repository = publication_repository
 
     async def create(self, data: PublicationDto.Create) -> None:
-        upload_id = uuid4()
-        object_key = f"{upload_id}.zip"
+        object_key = f"{uuid4()}.zip"
 
         await data.file.seek(0)
         content = await data.file.read()
@@ -34,21 +33,31 @@ class PublicationService:
             Bucket=settings.BUCKET_NAME,
             Key=object_key,
             Body=content,
-            ContentType=data.file.content_type or "application/zip",
+            ContentType=data.file.content_type,
         )
 
 
         async with get_session(transactional=True):
-            await self.publication_repository.create()
-            await self.publication_repository.create_outbox()
+            upload = await self.publication_repository.create_upload(
+                original_filename=data.file.filename,
+                storage_key=object_key,
+                content_type=data.file.content_type,
+                size_bytes=len(content),
+            )
 
+            await self.publication_repository.create_outbox(
+                aggregate_id=upload.id,
+                event_type="upload.received",
+                payload={
+                    "upload_id": str(upload.id),
+                    "storage_key": upload.storage_key,
+                },
+            )
 
-        return {"upload_id": upload_id, "status": "pending"}
-
-        return await self.publication_repository.create()
+        return {"upload_id": upload.id, "status": upload.status}
 
     async def read(self) -> None:
         return await self.publication_repository.read()
 
-    async def read_one(self) -> None:
+    async def read_one(self, parameters: PublicationDto.ReadOne) -> None:
         return await self.publication_repository.read_one()

@@ -25,7 +25,9 @@ class UploadModel(BaseModel):
     )
 
     status: Mapped[UploadEnum] = mapped_column(
-        Enum(UploadEnum), nullable=False, index=True, server_default=text(f"'{UploadEnum.PENDING.value}'")
+        Enum(UploadEnum, name="upload_status"), nullable=False, index=True, server_default=text(
+            f"'{UploadEnum.PENDING.value}'"
+        )
     )
 
     error_message: Mapped[str | None] = mapped_column(

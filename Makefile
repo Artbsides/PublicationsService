@@ -66,7 +66,7 @@ run:  ## Run dockerized api - Parameters: dockerized=true
 	@if [ "$(dockerized)" = "true" ]; then
 		docker compose up api
 	else
-		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_PORT:-8000} --reload
+		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_HOST_PORT:-8000} --reload
 	fi
 
 

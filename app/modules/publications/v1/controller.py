@@ -20,10 +20,15 @@ async def create(
 
 
 @router.get("/publications/v1/uploads", **router_settings)
-async def read(publication_service: PublicationService = Depends()) -> None:
-    return await publication_service.read_one()
+async def read(
+    publication_service: PublicationService = Depends()
+) -> None:
+    return await publication_service.read()
 
 
-@router.get("/publications/v1/uploads/:upload_id", **router_settings)
-async def read_one(publication_service: PublicationService = Depends()) -> None:
-    return await publication_service.read_one()
+@router.get("/publications/v1/uploads/{id}", **router_settings)
+async def read_one(
+    parameters: PublicationDto.ReadOne = Depends(),
+    publication_service: PublicationService = Depends()
+) -> None:
+    return await publication_service.read_one(parameters)
