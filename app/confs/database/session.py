@@ -23,15 +23,6 @@ _current_session: ContextVar[AsyncSession | None] = ContextVar(
 )
 
 
-def get_current_session() -> AsyncSession:
-    session = _current_session.get()
-
-    if session is None:
-        raise RuntimeError("No active DB session in context")
-
-    return session
-
-
 @asynccontextmanager
 async def get_session(transactional: bool = False) -> AsyncGenerator[AsyncSession, None]:
     current_session = _current_session.get()
@@ -50,6 +41,15 @@ async def get_session(transactional: bool = False) -> AsyncGenerator[AsyncSessio
                     yield session
             finally:
                 _current_session.reset(token)
+
+
+def get_current_session() -> AsyncSession:
+    session = _current_session.get()
+
+    if session is None:
+        raise RuntimeError("No active DB session in context")
+
+    return session
 
 
 async def dispose_engine() -> None:

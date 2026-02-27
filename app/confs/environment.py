@@ -47,19 +47,27 @@ class BaseConfig:
         default="", cast=str
     )
 
-    MINIO_HOST = config("MINIO_HOST",
+    BUCKET_HOST = config("BUCKET_HOST",
         default="", cast=str
     )
 
-    MINIO_ROOT_USER = config("MINIO_ROOT_USER",
+    BUCKET_USER = config("BUCKET_USER",
         default="", cast=str
     )
 
-    MINIO_ROOT_PASSWORD = config("MINIO_ROOT_PASSWORD",
+    BUCKET_PASSWORD = config("BUCKET_PASSWORD",
         default="", cast=str
     )
 
-    MINIO_BUCKET = config("MINIO_BUCKET",
+    BUCKET_NAME = config("BUCKET_NAME",
+        default="", cast=str
+    )
+
+    MESSAGE_BROKER_PASS = config("MESSAGE_BROKER_PASS",
+        default="", cast=str
+    )
+
+    MESSAGE_BROKER_USER = config("MESSAGE_BROKER_USER",
         default="", cast=str
     )
 
