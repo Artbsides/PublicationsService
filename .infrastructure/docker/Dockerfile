@@ -9,9 +9,9 @@ RUN pip install --upgrade pip && \
     pip install poetry-plugin-export
 
 RUN poetry export --output requirements.txt --with-credentials --no-interaction
-RUN poetry export --output requirements.dev.txt --with-credentials --no-interaction --with dev
+RUN poetry export --output requirements.development.txt --with-credentials --no-interaction --with development
 
-RUN pip install -r requirements.dev.txt --require-hashes --no-cache-dir && \
+RUN pip install -r requirements.development.txt --require-hashes --no-cache-dir && \
     pip uninstall poetry --yes
 
 COPY . .

@@ -24,7 +24,7 @@ _current_session: ContextVar[AsyncSession | None] = ContextVar(
 
 
 @asynccontextmanager
-async def get_session(transactional: bool = False) -> AsyncGenerator[AsyncSession, None]:
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     current_session = _current_session.get()
 
     if current_session:
@@ -34,10 +34,7 @@ async def get_session(transactional: bool = False) -> AsyncGenerator[AsyncSessio
             token = _current_session.set(session)
 
             try:
-                if transactional:
-                    async with session.begin():
-                        yield session
-                else:
+                async with session.begin():
                     yield session
             finally:
                 _current_session.reset(token)

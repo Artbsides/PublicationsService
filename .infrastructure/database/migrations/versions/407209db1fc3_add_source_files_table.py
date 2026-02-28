@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table('source_files',
     sa.Column('id', sa.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
     sa.Column('filename', sa.String(length=255), nullable=False),
-    sa.Column('storage_key', sa.String(length=512), nullable=False),
+    sa.Column('storage_key', sa.String(length=255), nullable=False),
     sa.Column('status', sa.Enum('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', name='source_file_status'), server_default=sa.text("'PENDING'"), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text("TIMEZONE('utc', CURRENT_TIMESTAMP)"), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),

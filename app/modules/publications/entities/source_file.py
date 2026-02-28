@@ -6,4 +6,6 @@ from app.enums import SourceFileStatusEnum
 
 class SourceFileEntity(BaseModel):
     id: UUID
+    filename: str
+    storage_key: str
     status: SourceFileStatusEnum

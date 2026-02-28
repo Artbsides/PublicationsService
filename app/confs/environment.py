@@ -8,7 +8,7 @@ class BaseConfig:
     )
 
     APP_PORT = config("APP_PORT",
-        default="8000", cast=str
+        default=8000, cast=int
     )
 
     APP_PREFIX = config("APP_PREFIX",
@@ -24,11 +24,11 @@ class BaseConfig:
     )
 
     DATABASE_HOST = config("DATABASE_HOST",
-        default="", cast=str
+        default="127.0.0.1", cast=str
     )
 
     DATABASE_PORT = config("DATABASE_PORT",
-        default="5432", cast=str
+        default=5432, cast=int
     )
 
     DATABASE_NAME = config("DATABASE_NAME",
@@ -48,7 +48,7 @@ class BaseConfig:
     )
 
     BUCKET_HOST = config("BUCKET_HOST",
-        default="", cast=str
+        default="127.0.0.1", cast=str
     )
 
     BUCKET_USER = config("BUCKET_USER",
@@ -67,7 +67,15 @@ class BaseConfig:
         default="", cast=str
     )
 
-    MESSAGE_BROKER_PASS = config("MESSAGE_BROKER_PASS",
+    MESSAGE_BROKER_PORT = config("MESSAGE_BROKER_PORT",
+        default=5672, cast=int
+    )
+
+    MESSAGE_BROKER_HOST = config("MESSAGE_BROKER_HOST",
+        default="127.0.0.1", cast=str
+    )
+
+    MESSAGE_BROKER_PASSWORD = config("MESSAGE_BROKER_PASSWORD",
         default="", cast=str
     )
 

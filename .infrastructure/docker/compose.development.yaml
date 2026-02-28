@@ -1,6 +1,7 @@
 services:
     api: &api
         image: xml-parser-api:development
+        container_name: api
         command: ${COMPOSE_DEVELOPMENT_COMMAND:-}
         build:
             target: development
@@ -14,6 +15,6 @@ services:
             - ${APP_PORT:-8000}:8000
             - ${APP_DEBUG_PORT:-5678}:5678
 
-    runner:
+    shell:
         <<: *api
         command: /bin/ash

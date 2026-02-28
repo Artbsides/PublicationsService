@@ -10,7 +10,15 @@ class BaseRepository:
     def session(self) -> AsyncSession:
         return get_current_session()
 
+    def to_filters(
+        self, model: BaseModel, kwargs: dict
+    ) -> list:
+        return [
+            getattr(model, attribute) == value for attribute, value in kwargs.items()
+        ]
+
     def to_entity(
-        self, entity: PydanticBaseModel, data: BaseModel
+        self, entity: PydanticBaseModel, data: BaseModel | None
     ) -> PydanticBaseModel:
-        return entity.model_validate(data, from_attributes=True)
+        return data and entity.model_validate(data, from_attributes=True)
+

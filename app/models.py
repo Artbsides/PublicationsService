@@ -31,7 +31,7 @@ class SourceFileModel(BaseModel):
     )
 
     storage_key: Mapped[str] = mapped_column(
-        String(512), nullable=False, unique=True
+        String(255), nullable=False, unique=True
     )
 
     status: Mapped[SourceFileStatusEnum] = mapped_column(
@@ -41,23 +41,21 @@ class SourceFileModel(BaseModel):
     )
 
 
-'''
-    class PublicationModel(BaseModel):
-        __tablename__ = "publications"
+class PublicationModel(BaseModel):
+    __tablename__ = "publications"
 
-        source_file_id: Mapped[UUID] = mapped_column(
-            UUID(as_uuid=True), ForeignKey("source_files.id", ondelete="RESTRICT"), index=True, nullable=False
-        )
+    source_file_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("source_files.id", ondelete="RESTRICT"), index=True, nullable=False
+    )
 
 
-    class ArticleModel(BaseModel):
-        __tablename__ = "publication_articles"
+class ArticleModel(BaseModel):
+    __tablename__ = "publication_articles"
 
-        publication_id: Mapped[UUID] = mapped_column(
-            UUID(as_uuid=True), ForeignKey("publication.id", ondelete="RESTRICT"), index=True, nullable=False
-        )
+    publication_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("publications.id", ondelete="RESTRICT"), index=True, nullable=False
+    )
 
-        data: Mapped[dict] = mapped_column(
-            JSONB, nullable=False
-        )
-'''
+    data: Mapped[dict] = mapped_column(
+        JSONB, nullable=False
+    )

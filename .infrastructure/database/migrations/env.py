@@ -34,7 +34,7 @@ section = config.config_ini_section
 config.set_section_option(section, "DATABASE_USER", settings.DATABASE_USER)
 config.set_section_option(section, "DATABASE_PASSWORD", settings.DATABASE_PASSWORD)
 config.set_section_option(section, "DATABASE_HOST", settings.DATABASE_HOST)
-config.set_section_option(section, "DATABASE_PORT", settings.DATABASE_PORT)
+config.set_section_option(section, "DATABASE_PORT", str(settings.DATABASE_PORT))
 config.set_section_option(section, "DATABASE_NAME", settings.DATABASE_NAME)
 
 

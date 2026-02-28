@@ -1,15 +1,11 @@
 name: xml-parser
 
 services:
-    api: &api
-        image: xml-parser-api:latest
-        container_name: api
+    base: &base
         tty: true
-        build:
-            context: .
-            dockerfile: .infrastructure/docker/Dockerfile
+        image: xml-parser-api:latest
         env_file:
-            - .env
+            - ../../.env
         environment:
             APP_DEBUG: 0
             APP_ENVIRONMENT: production
@@ -20,6 +16,23 @@ services:
             - minio-buckets
         ports:
             - ${APP_PORT:-8000}:8000
+
+    api: &api
+        <<: *base
+        container_name: api
+        build:
+            context: ../..
+            dockerfile: .infrastructure/docker/Dockerfile
+
+    shell:
+        <<: *api
+        command: /bin/ash
+
+    worker:
+        <<: *base
+        container_name: worker
+        command: celery -A workers.process_uploaded_file.app worker --loglevel=info --concurrency=2
+        ports: []
 
     postgres:
         image: postgres:18.3-alpine
@@ -38,7 +51,7 @@ services:
         container_name: rabbitmq
         environment:
             RABBITMQ_DEFAULT_USER: ${MESSAGE_BROKER_USER}
-            RABBITMQ_DEFAULT_PASS: ${MESSAGE_BROKER_PASS}
+            RABBITMQ_DEFAULT_PASS: ${MESSAGE_BROKER_PASSWORD}
         volumes:
             - ./volumes/rabbitmq:/var/lib/rabbitmq
         ports:
@@ -92,7 +105,3 @@ services:
             - prometheus
         ports:
             - ${GRAFANA_PORT:-3001}:3000
-
-    runner:
-        <<: *api
-        command: /bin/ash
