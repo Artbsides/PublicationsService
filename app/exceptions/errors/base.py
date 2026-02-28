@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class BaseError(Exception):
-    args: Optional[dict[str, str]] = None
+    args: dict[str, str] | None = None
     status_code: int

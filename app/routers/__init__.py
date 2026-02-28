@@ -1,4 +1,4 @@
-from app.modules.publications.v1.controller import router as publications
+from app.modules.publications.controller import router as publications
 
 
 __all__ = [

@@ -1,8 +1,0 @@
-from enum import Enum
-
-
-class UploadStatusEnum(str, Enum):
-    PENDING = "PENDING"
-    PROCESSING = "PROCESSING"
-    COMPLETED = "COMPLETED"
-    FAILED = "FAILED"

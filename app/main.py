@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError
 
-from app.confs.lifespan import lifespan
+from app.routers.router import router
+from app.lifespan import lifespan
 from app.confs.environment import settings
 from app.exceptions.exception_handler import ExceptionHandler
-from app.routers.router import router
 
 
 app = FastAPI(
@@ -12,10 +13,9 @@ app = FastAPI(
         else "/docs", debug=settings.APP_DEBUG
 )
 
-
 app.add_exception_handler(Exception, ExceptionHandler.throw)
 app.add_exception_handler(HTTPException, ExceptionHandler.throw)
 app.add_exception_handler(RequestValidationError, ExceptionHandler.throw)
-
+app.add_exception_handler(ValidationError, ExceptionHandler.throw)
 
 app.include_router(router)

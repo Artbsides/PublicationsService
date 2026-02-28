@@ -1,13 +1,13 @@
 import importlib
-from fastapi.encoders import jsonable_encoder
 import inflection
 
 from fastapi import Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
 from app.exceptions.errors.base import BaseError
-from app.exceptions.errors.internal_server_error import InternalServerError
+from app.exceptions.errors.internal_server import InternalServerError
 
 
 class ExceptionHandler:
@@ -27,5 +27,7 @@ class ExceptionHandler:
         }
 
         return JSONResponse(
-            jsonable_encoder(response), getattr(exception, "status_code", status.HTTP_500_INTERNAL_SERVER_ERROR)
+            jsonable_encoder(response), getattr(
+                exception, "status_code", status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         )

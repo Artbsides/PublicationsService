@@ -63,6 +63,10 @@ class BaseConfig:
         default="", cast=str
     )
 
+    BUCKET_SERVICE_NAME = config("BUCKET_SERVICE_NAME",
+        default="", cast=str
+    )
+
     MESSAGE_BROKER_PASS = config("MESSAGE_BROKER_PASS",
         default="", cast=str
     )

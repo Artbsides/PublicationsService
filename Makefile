@@ -35,29 +35,11 @@ help:
 	@$(PYTHON) -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 
-version:  ## Read or update app version - Parameters: update-to=[0-9].[0-9].[0-9]
-	@poetry version $(if $(update-to), $(update-to), -s)
-
-database:  ## Run dockerized postgres database - Parameters: seed=true
-	@docker compose --project-directory $(DOCKER_PATH) up postgres --wait
-
-	@if [ "$(seed)" = "true" ]; then
-		$(MAKE) database-seeds
-	fi
-
-database-seeds:  ## Run seeds on dockerized postgres database - Parameters: dockerized=true
-	POETRY_RUN=""
-
-	@if [ "$(dockerized)" = "true" ]; then
-		DOCKER_COMPOSE="docker compose -f compose.yml -f compose.development.yml run --rm runner"
-	else
-		POETRY_RUN="poetry run"
-	fi
-
-	$$DOCKER_COMPOSE $$POETRY_RUN python seeds/main.py > /dev/null 2>&1 || true
-
 bucket:  ## Run dockerized bucket message broker
 	@docker compose --project-directory $(DOCKER_PATH) up minio minio-buckets --wait
+
+database:  ## Run dockerized postgres database
+	@docker compose --project-directory $(DOCKER_PATH) up postgres --wait
 
 message-broker:  ## Run dockerized rabbitmq message broker
 	@docker compose --project-directory $(DOCKER_PATH) up rabbitmq --wait

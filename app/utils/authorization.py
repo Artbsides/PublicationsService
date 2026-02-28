@@ -15,5 +15,5 @@ class Authorization(HTTPBearer):
             jwt.decode(
                 authorization.credentials, settings.JWT_SECRET, [settings.JWT_ALGORITHM]
             )
-        except Exception as e:
-            raise UnauthorizedTokenError from e
+        except Exception as exception:
+            raise UnauthorizedTokenError from exception
