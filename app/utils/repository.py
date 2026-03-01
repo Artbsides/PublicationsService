@@ -22,3 +22,13 @@ class BaseRepository:
     ) -> PydanticBaseModel:
         return data and entity.model_validate(data, from_attributes=True)
 
+    def to_entities(
+        self, entity: PydanticBaseModel, data: list[BaseModel]
+    ) -> list[PydanticBaseModel]:
+        entities = []
+
+        if isinstance(data, list):
+            for item in data:
+                entities.append(self.to_entity(entity, item))
+
+        return entities

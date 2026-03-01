@@ -10,7 +10,10 @@ from app.confs.database.session import get_session
 from app.confs.workers import get_application
 from app.enums import SourceFileStatusEnum
 from app.models import SourceFileModel
+from app.modules.publications.dtos.article import ArticleDto
 from app.modules.publications.dtos.publication import PublicationDto
+from app.modules.publications.entities.article import ArticleEntity
+from app.modules.publications.entities.publication import PublicationEntity
 from app.modules.publications.repository import PublicationRepository
 from app.utils.broker import publish
 from app.utils.bucket import download, upload
@@ -18,12 +21,12 @@ from app.utils.xml import generate_hash, parse_xml
 
 
 class PublicationService:
-    def __init__(
-        self, publication_repository: PublicationRepository = Depends()
-    ) -> None:
+    def __init__(self, publication_repository: PublicationRepository = Depends()) -> None:
         self.publication_repository = publication_repository
 
-    async def create(self, data: PublicationDto.Create) -> None:
+    async def create(
+        self, data: PublicationDto.Create
+    ) -> None:
         async with get_session():
             source_file = await self.publication_repository.create(
                 filename=data.file.filename, storage_key=upload(data.file)
@@ -35,7 +38,9 @@ class PublicationService:
 
         return source_file
 
-    async def process_source_file(self, source_file_id: UUID, is_last_retry: bool = False) -> None:
+    async def process_source_file(
+        self, source_file_id: UUID, is_last_retry: bool = False
+    ) -> None:
         async with get_session():
             source_file = await self.publication_repository.update(
                 source_file_id=source_file_id, filters={"status": SourceFileStatusEnum.PENDING}, values={
@@ -92,8 +97,6 @@ class PublicationService:
                         source_file_id=source_file.id, values={"status": SourceFileStatusEnum.COMPLETED}
                     )
 
-                raise Exception
-
             except Exception as exception:
                 async with get_session():
                     await self.publication_repository.update(
@@ -103,3 +106,19 @@ class PublicationService:
                     )
 
                 raise exception
+
+    async def retrieve_pubications(self) -> list[PublicationEntity]:
+        async with get_session():
+            return await self.publication_repository.retrieve_pubications()
+
+    async def retrieve_pubication(self, parameters: PublicationDto.ReadOne) -> PublicationEntity:
+        async with get_session():
+            return await self.publication_repository.retrieve_pubication(
+                id=parameters.id
+            )
+
+    async def retrieve_articles(self, parameters: ArticleDto.Read) -> list[ArticleEntity]   :
+        async with get_session():
+            return await self.publication_repository.retrieve_articles(
+                publication_id=parameters.publication_id
+            )

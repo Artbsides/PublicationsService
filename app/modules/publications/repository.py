@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import insert, select, update
+from sqlalchemy.orm import selectinload
 
 from app.enums import SourceFileStatusEnum
 from app.models import ArticleModel, PublicationModel, SourceFileModel
@@ -76,4 +77,36 @@ class PublicationRepository(BaseRepository):
 
         return self.to_entity(
             ArticleEntity, (await self.session.execute(query)).scalar_one()
+        )
+
+    async def retrieve_pubications(self) -> list[PublicationEntity]:
+        query = select(PublicationModel).options(
+            selectinload(PublicationModel.source_file)
+        )
+
+        return self.to_entities(
+            PublicationEntity, (await self.session.execute(query)).scalars().all()
+        )
+
+    async def retrieve_pubication(self, *, id: UUID) -> PublicationEntity:
+        query = (
+            select(PublicationModel).options(
+                selectinload(PublicationModel.source_file)
+            )
+            .where(
+                PublicationModel.id == id
+            )
+        )
+
+        return self.to_entity(
+            PublicationEntity, (await self.session.execute(query)).scalar_one()
+        )
+
+    async def retrieve_articles(self, *, publication_id: UUID) -> list[ArticleEntity]:
+        query = select(ArticleModel).where(
+            ArticleModel.publication_id == publication_id
+        )
+
+        return self.to_entities(
+            ArticleEntity, (await self.session.execute(query)).scalars().all()
         )

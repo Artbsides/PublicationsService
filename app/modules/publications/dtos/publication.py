@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import UploadFile
 from pydantic import BaseModel, field_validator
 
@@ -16,3 +18,9 @@ class PublicationDto:
                 raise ValueError("file must be .zip")
 
             return file
+
+    class Read(BaseModel):
+        ...
+
+    class ReadOne(BaseModel):
+        id: UUID

@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from app.enums import SourceFileStatusEnum
 
@@ -40,12 +40,20 @@ class SourceFileModel(BaseModel):
         )
     )
 
+    publication = relationship(
+        "PublicationModel", back_populates="source_file"
+    )
+
 
 class PublicationModel(BaseModel):
     __tablename__ = "publications"
 
     source_file_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("source_files.id", ondelete="RESTRICT"), index=True, unique=True, nullable=False
+    )
+
+    source_file = relationship(
+        "SourceFileModel", back_populates="publication"
     )
 
 

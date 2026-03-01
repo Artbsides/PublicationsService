@@ -31,3 +31,4 @@ def process_uploaded_file(self, source_file_id: UUID):
 
 
 ## TODO: celery types (.retry, .max_retries ...) - move broker and bucket methods to repository - create env vars to ensure_bindings at startup
+## route to list articles
