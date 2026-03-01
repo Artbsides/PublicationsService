@@ -3,7 +3,9 @@ from uuid import UUID
 from sqlalchemy import insert, select, update
 
 from app.enums import SourceFileStatusEnum
-from app.models import SourceFileModel
+from app.models import ArticleModel, PublicationModel, SourceFileModel
+from app.modules.publications.entities.article import ArticleEntity
+from app.modules.publications.entities.publication import PublicationEntity
 from app.modules.publications.entities.source_file import SourceFileEntity
 from app.utils.repository import BaseRepository
 
@@ -24,27 +26,54 @@ class PublicationRepository(BaseRepository):
         )
 
     async def read_one(
-        self, *, source_file_id: UUID, **kwargs
-    ) -> SourceFileEntity:
-        query = select(SourceFileModel).where(
-            SourceFileModel.id == source_file_id, *self.to_filters(SourceFileModel, kwargs)
-        )
+        self, *, source_file_id: UUID, filters: dict | None = None
+    ) -> PublicationEntity:
+        query = select(PublicationModel).where(PublicationModel.source_file_id == source_file_id)
+
+        if filters:
+            query = query.where(
+                *self.to_filters(PublicationModel, filters)
+            )
 
         return self.to_entity(
-            SourceFileEntity, (await self.session.execute(query)).scalar_one()
+            PublicationEntity, (await self.session.execute(query)).scalar_one()
         )
 
     async def update(
-        self, *, source_file_id: UUID, filters: dict, values: dict
+        self, *, source_file_id: UUID, values: dict, filters: dict | None = None
     ) -> SourceFileEntity | None:
-        query = (
-            update(SourceFileModel).where(
-                SourceFileModel.id == source_file_id, *self.to_filters(SourceFileModel, filters)
+        query = update(SourceFileModel).where(SourceFileModel.id == source_file_id)
+
+        if filters:
+            query = query.where(
+                *self.to_filters(SourceFileModel, filters)
             )
-            .values(values)
-            .returning(SourceFileModel)
-        )
+
+        query = query.values(values).returning(SourceFileModel)
 
         return self.to_entity(
             SourceFileEntity, (await self.session.execute(query)).scalar_one_or_none()
+        )
+
+    async def create_publication(
+        self, *, source_file_id: UUID
+    ) -> PublicationEntity:
+        query = insert(PublicationModel).values(source_file_id=source_file_id).returning(PublicationModel)
+
+        return self.to_entity(
+            PublicationEntity, (await self.session.execute(query)).scalar_one()
+        )
+
+    async def create_article(
+        self, *, publication_id: UUID, idempotency_key: UUID, data: dict
+    ) -> ArticleEntity:
+        query = (
+            insert(ArticleModel).values(
+                publication_id=publication_id, idempotency_key=idempotency_key, data=data
+            )
+            .returning(ArticleModel)
+        )
+
+        return self.to_entity(
+            ArticleEntity, (await self.session.execute(query)).scalar_one()
         )

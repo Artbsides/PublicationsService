@@ -1,3 +1,5 @@
+import hashlib
+import json
 from xml.etree import ElementTree
 
 
@@ -8,3 +10,7 @@ def parse_xml(file: bytes, filename: str):
         return article.attrib
 
     raise ValueError(f"No <article> element found in {filename!r}")
+
+
+def generate_hash(data: dict) -> str:
+    return hashlib.sha256(json.dumps(data).encode("utf-8")).hexdigest()

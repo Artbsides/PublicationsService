@@ -9,5 +9,5 @@ def get_application():
     )
 
     return Celery(
-        "XMLParserWorker", broker=f"amqp://{uri}", backend="rpc://",
+        "XMLParserWorker", broker=f"amqp://{uri}//", backend="rpc://",
     )

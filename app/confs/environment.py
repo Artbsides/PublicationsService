@@ -83,6 +83,10 @@ class BaseConfig:
         default="", cast=str
     )
 
+    MESSAGE_BROKER_ARTICLE_EXCHANGE = config("MESSAGE_BROKER_ARTICLE_EXCHANGE",
+        default="", cast=str
+    )
+
     JWT_SECRET = config("JWT_SECRET",
         default="", cast=str
     )

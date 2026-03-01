@@ -45,12 +45,16 @@ class PublicationModel(BaseModel):
     __tablename__ = "publications"
 
     source_file_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("source_files.id", ondelete="RESTRICT"), index=True, nullable=False
+        UUID(as_uuid=True), ForeignKey("source_files.id", ondelete="RESTRICT"), index=True, unique=True, nullable=False
     )
 
 
 class ArticleModel(BaseModel):
-    __tablename__ = "publication_articles"
+    __tablename__ = "articles"
+
+    idempotency_key: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True), index=True, unique=True, nullable=False
+    )
 
     publication_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("publications.id", ondelete="RESTRICT"), index=True, nullable=False
