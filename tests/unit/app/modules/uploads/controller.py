@@ -1,6 +1,6 @@
 import io
 import pytest
-import random
+import secrets
 
 from uuid import uuid4
 from faker import Faker
@@ -18,10 +18,10 @@ faker = Faker()
 
 class TestUploadController:
     @pytest.mark.asyncio
-    async def create_upload_success_test(self):
+    async def create_upload_success_test(self) -> None:
         mock_response = UploadEntity(
             id=uuid4(),
-            filename=faker.file_name(extension="zip"), 
+            filename=faker.file_name(extension="zip"),
             storage_key=f"{faker.uuid4()}.zip",
             status=UploadStatusEnum.PENDING,
             created_at=faker.date_time_this_year().isoformat(),
@@ -42,13 +42,13 @@ class TestUploadController:
         ) == mock_response
 
     @pytest.mark.asyncio
-    async def retrieve_uploads_success_test(self):
+    async def retrieve_uploads_success_test(self) -> None:
         mock_response = [
             UploadEntity(
                 id=uuid4(),
-                filename=faker.file_name(extension="zip"), 
+                filename=faker.file_name(extension="zip"),
                 storage_key=f"{faker.uuid4()}.zip",
-                status=random.choice(list(UploadStatusEnum)),
+                status=secrets.choice(list(UploadStatusEnum)),
                 created_at=faker.date_time_this_year().isoformat(),
                 updated_at=faker.date_time_this_year().isoformat(),
             )
@@ -64,12 +64,12 @@ class TestUploadController:
         ) == mock_response
 
     @pytest.mark.asyncio
-    async def retrieve_upload_success_test(self):
+    async def retrieve_upload_success_test(self) -> None:
         mock_response = UploadEntity(
             id=uuid4(),
-            filename=faker.file_name(extension="zip"), 
+            filename=faker.file_name(extension="zip"),
             storage_key=f"{faker.uuid4()}.zip",
-            status=random.choice(list(UploadStatusEnum)),
+            status=secrets.choice(list(UploadStatusEnum)),
             created_at=faker.date_time_this_year().isoformat(),
             updated_at=faker.date_time_this_year().isoformat(),
         )

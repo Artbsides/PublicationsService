@@ -27,6 +27,7 @@ boto3 = "^1.42.59"
 celery = "^5.6.2"
 aio-pika = "^9.6.1"
 prometheus-fastapi-instrumentator = "^7.1.0"
+defusedxml = "^0.7.1"
 
 [tool.poetry.group.development.dependencies]
 isort = "^8.0.0"
@@ -53,22 +54,28 @@ omit = [
 fail_under = 70
 
 [tool.ruff]
-lint.select = ["ALL"]
+lint.select = [
+    "E",
+    "F",
+    "W",
+    "B",
+    "UP",
+    "FAST",
+]
 indent-width = 4
 line-length = 128
 lint.ignore = [
     "D",
-    "I",
     "B004",
     "B009",
     "N802",
     "N815",
-    "E722",
     "FA100",
     "FA102",
+    "FAST002",
+    "FAST003",
     "PT009",
     "PT013",
-    "BLE001",
     "COM812",
     "TC001",
     "TC003",
@@ -76,17 +83,20 @@ lint.ignore = [
     "ICN001",
 ]
 
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = [
+    "S101",
+    "PLR0913",
+    "ARG002",
+]
+".infrastructure/database/migrations/*" = ["ALL"]
+
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = [
     "fastapi.Depends",
     "fastapi.params.Depends",
     "fastapi.Query",
     "fastapi.params.Query"
-]
-
-[tool.ruff.lint.extend-per-file-ignores]
-"tests/**/*.py" = [
-    "S101"
 ]
 
 [tool.ruff.lint.pylint]
@@ -107,6 +117,7 @@ length_sort = true
 src_paths = ["app", "tests", "workers"]
 
 sections = [
+    "FUTURE",
     "THIRDPARTY",
     "FIRSTPARTY"
 ]

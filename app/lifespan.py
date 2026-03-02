@@ -1,14 +1,13 @@
-from typing import AsyncGenerator
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
 
-from app.core.config.environment import settings
 from app.core.config.message_broker import ensure_binding
 from app.core.config.database.session import dispose_engine
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(_: FastAPI) -> AsyncGenerator:
     await ensure_binding(
         bindings=[{
             "exchange": "articles", "routing_keys": [

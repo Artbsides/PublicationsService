@@ -1,9 +1,9 @@
 import asyncio
 
 from celery import Celery
-from typing import Coroutine
 from functools import lru_cache
 from celery.signals import worker_process_init, worker_process_shutdown
+from collections.abc import Coroutine
 
 from app.core.config.environment import settings
 

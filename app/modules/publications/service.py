@@ -1,7 +1,7 @@
 import io
 import zipfile
 
-from uuid import UUID, NAMESPACE_DNS, uuid5
+from uuid import NAMESPACE_DNS, uuid5
 from fastapi import Depends
 from psycopg.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
@@ -9,7 +9,6 @@ from sqlalchemy.exc import IntegrityError
 from app.utils.xml import parse_xml, generate_hash
 from app.core.storage import storage_download
 from app.core.message_broker import messaging_publish
-from app.core.config.environment import settings
 from app.modules.uploads.service import UploadService
 from app.core.config.database.session import get_session
 from app.modules.uploads.schemas.dtos import UploadDto
@@ -95,7 +94,7 @@ class PublicationService:
                         )
                     )
 
-            except Exception as exception:
+            except Exception:
                 async with get_session():
                     await self.upload_service.update_upload(
                         filters=UploadDto.ReadOne(id=upload.id), data=UploadDto.Update(
@@ -103,7 +102,7 @@ class PublicationService:
                         )
                     )
 
-                raise exception
+                raise
 
     async def retrieve_publications(self) -> list[PublicationEntity]:
         async with get_session():

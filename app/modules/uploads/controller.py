@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import Form, Depends, APIRouter, status
 
 from app.core.authorization import Authorization
@@ -17,7 +18,7 @@ router = APIRouter(
     status_code=status.HTTP_202_ACCEPTED
 )
 async def create_upload(
-    data: UploadDto.Upload = Form(), upload_service: UploadService = Depends()
+    data: Annotated[UploadDto.Upload, Form()], upload_service: UploadService = Depends()
 ) -> UploadResponse.Create:
     return await upload_service.create_upload(data)
 

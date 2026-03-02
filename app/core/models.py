@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from sqlalchemy import Enum, String, DateTime, ForeignKey, text
 from sqlalchemy.orm import Mapped, DeclarativeBase, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -18,7 +18,7 @@ class BaseModel(DeclarativeBase):
     )
 
     updated_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True, onupdate=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), nullable=True, onupdate=lambda: datetime.now(datetime.now(UTC))
     )
 
 

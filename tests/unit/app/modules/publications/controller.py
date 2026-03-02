@@ -14,7 +14,7 @@ faker = Faker()
 
 class TestPublicationController:
     @pytest.mark.asyncio
-    async def retrieve_publications_success_test(self):
+    async def retrieve_publications_success_test(self) -> None:
         mock_response = [
             PublicationEntity(
                 id=uuid4(),
@@ -34,7 +34,7 @@ class TestPublicationController:
         ) == mock_response
 
     @pytest.mark.asyncio
-    async def retrieve_publication_success_test(self):
+    async def retrieve_publication_success_test(self) -> None:
         mock_response = PublicationEntity(
             id=uuid4(),
             upload_id=uuid4(),
@@ -55,7 +55,7 @@ class TestPublicationController:
         ) == mock_response
 
     @pytest.mark.asyncio
-    async def retrieve_articles_success_test(self):
+    async def retrieve_articles_success_test(self) -> None:
         mock_response = [
             ArticleEntity(
                 id=uuid4(),
@@ -79,7 +79,7 @@ class TestPublicationController:
         ) == mock_response
 
     @pytest.mark.asyncio
-    async def retrieve_article_success_test(self):
+    async def retrieve_article_success_test(self) -> None:
         mock_response = ArticleEntity(
             id=uuid4(),
             publication_id=uuid4(),

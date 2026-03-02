@@ -1,9 +1,15 @@
+from __future__ import annotations
+
 from uuid import UUID
-from celery import Task
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from celery import Task
 
 from app.core.config.worker import run_async, get_application
-from app.modules.uploads.repository import UploadRepository
 from app.modules.uploads.service import UploadService
+from app.modules.uploads.repository import UploadRepository
 from app.modules.publications.service import PublicationService
 from app.modules.publications.repository import PublicationRepository
 from app.modules.publications.schemas.dtos import PublicationDto

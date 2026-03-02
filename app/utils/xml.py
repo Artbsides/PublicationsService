@@ -1,7 +1,7 @@
 import json
 import hashlib
 
-from xml.etree import ElementTree
+from defusedxml import ElementTree
 
 
 def parse_xml(file: bytes, filename: str) -> dict:

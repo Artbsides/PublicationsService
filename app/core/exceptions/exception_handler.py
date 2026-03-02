@@ -19,7 +19,7 @@ class ExceptionHandler:
         try:
             exception = getattr(importlib.import_module(
                 f"app.core.exceptions.errors.{ inflection.underscore(module).replace("_error", "") }"), module)(exception)
-        except:
+        except Exception:
             exception = InternalServerError
 
         response = {

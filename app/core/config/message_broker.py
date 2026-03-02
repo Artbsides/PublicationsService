@@ -1,13 +1,13 @@
-from typing import AsyncGenerator
 from aio_pika import ExchangeType, connect_robust
 from contextlib import asynccontextmanager
 from aio_pika.abc import AbstractChannel
+from collections.abc import AsyncGenerator
 
 from app.core.config.environment import settings
 
 
 @asynccontextmanager
-async def get_channel() -> AsyncGenerator[AbstractChannel, None]:
+async def get_channel() -> AsyncGenerator[AbstractChannel]:
     uri = (
         f"{settings.MESSAGE_BROKER_USER}:{settings.MESSAGE_BROKER_PASSWORD}@"
         f"{settings.MESSAGE_BROKER_HOST}:{settings.MESSAGE_BROKER_PORT}//"

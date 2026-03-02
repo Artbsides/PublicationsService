@@ -1,7 +1,7 @@
 
-from typing import AsyncGenerator
 from contextlib import asynccontextmanager
 from contextvars import ContextVar
+from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config.database.connection_settings import get_engine_settings, get_session_factory_settings, \
@@ -22,7 +22,7 @@ async_session: ContextVar[AsyncSession | None] = ContextVar(
 
 
 @asynccontextmanager
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_session() -> AsyncGenerator[AsyncSession]:
     current_session = async_session.get()
 
     if current_session:

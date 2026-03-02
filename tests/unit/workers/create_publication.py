@@ -1,24 +1,24 @@
 import pytest
 
 from uuid import uuid4
-from unittest import mock
+from unittest.mock import MagicMock, patch
 from celery.exceptions import Retry
 
 from workers.create_publication import create_publication
 
 
 class TestWorker:
-    @mock.patch("workers.create_publication.run_async")
-    @mock.patch("workers.create_publication.PublicationService")
-    @mock.patch("workers.create_publication.UploadService")
-    @mock.patch("workers.create_publication.PublicationRepository")
+    @patch("workers.create_publication.run_async")
+    @patch("workers.create_publication.PublicationService")
+    @patch("workers.create_publication.UploadService")
+    @patch("workers.create_publication.PublicationRepository")
     def create_publication_success_test(
         self,
-        mock_publication_repository,
-        mock_upload_service,
-        mock_publication_service,
-        mock_run_async
-    ):
+        mock_publication_repository: MagicMock,
+        mock_upload_service: MagicMock,
+        mock_publication_service: MagicMock,
+        mock_run_async: MagicMock,
+    ) -> None:
         upload_id = uuid4()
 
         create_publication(upload_id)
@@ -37,19 +37,19 @@ class TestWorker:
             mock_publication_service.return_value.create_publication.return_value
         )
 
-    @mock.patch("workers.create_publication.run_async")
-    @mock.patch("workers.create_publication.PublicationService")
-    @mock.patch("workers.create_publication.UploadService")
-    @mock.patch("workers.create_publication.PublicationRepository")
-    @mock.patch("workers.create_publication.create_publication.retry")
+    @patch("workers.create_publication.run_async")
+    @patch("workers.create_publication.PublicationService")
+    @patch("workers.create_publication.UploadService")
+    @patch("workers.create_publication.PublicationRepository")
+    @patch("workers.create_publication.create_publication.retry")
     def create_publication_failure_test(
         self,
-        mock_retry,
-        mock_publication_repository,
-        mock_upload_service,
-        mock_publication_service,
-        mock_run_async,
-    ):
+        mock_retry: MagicMock,
+        mock_publication_repository: MagicMock,
+        mock_upload_service: MagicMock,
+        mock_publication_service: MagicMock,
+        mock_run_async: MagicMock,
+    ) -> None:
         mock_retry.side_effect = Retry()
         mock_run_async.side_effect = Exception()
 
