@@ -1,0 +1,59 @@
+name: PublicationsService - OnPush
+
+on:
+    push:
+        branches:
+            - "**"
+    workflow_call:
+
+jobs:
+    Tests:
+        runs-on: ubuntu-22.04
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+
+          - name: Install Poetry
+            run: |
+                pipx install poetry
+
+          - name: Install Python
+            uses: actions/setup-python@v4
+            with:
+                cache: poetry
+                cache-dependency-path: poetry.lock
+                python-version: "3.14.2"
+
+          - name: Install Dependencies
+            run: |
+                make dependencies
+
+          - name: Tests
+            run: |
+                make tests
+
+    CodeConvention:
+        runs-on: ubuntu-22.04
+        steps:
+
+          - name: Checkout
+            uses: actions/checkout@v3
+
+          - name: Install Poetry
+            run: |
+                pipx install poetry
+
+          - name: Install Python
+            uses: actions/setup-python@v4
+            with:
+                cache: poetry
+                cache-dependency-path: poetry.lock
+                python-version: "3.14.2"
+
+          - name: Install Dependencies
+            run: |
+                make dependencies
+
+          - name: Code Convention
+            run: |
+                make code-convention github=true

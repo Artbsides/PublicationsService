@@ -210,9 +210,10 @@ $ make dependencies
 # Melhorias Necessárias
 
 * Implementar testes unitários e de integração
-* Incrementar documentação levando em consideração outros cenários de uso
 * Implementar versionamento de rotas
 * Implementar OpenTelementry para log de fluxos críticos
+* Implementar paginação em rotas que retornam listas
+* Incrementar documentação levando em consideração outros cenários de uso
 * Melhorar recursos do exception handler
 
 # Principais Tecnologias Utilizadas

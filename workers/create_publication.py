@@ -2,6 +2,7 @@ from uuid import UUID
 from celery import Task
 
 from app.core.config.worker import run_async, get_application
+from app.modules.uploads.repository import UploadRepository
 from app.modules.uploads.service import UploadService
 from app.modules.publications.service import PublicationService
 from app.modules.publications.repository import PublicationRepository
@@ -18,7 +19,12 @@ app = get_application()
     name="create_publication",
 )
 def create_publication(self: Task, upload_id: UUID) -> None:
-    publication_service = PublicationService(UploadService(), PublicationRepository())
+    publication_service = PublicationService(
+        upload_service=UploadService(
+            upload_repository=UploadRepository()
+        ),
+        publication_repository=PublicationRepository()
+    )
 
     try:
         run_async(
