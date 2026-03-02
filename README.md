@@ -23,7 +23,7 @@ A partir deste ponto, basta rodar o seguinte comando para instalar a aplicação
 $ make build
 ```
 
-Ao final da execução, as imagens Docker serão construídas, os serviços serão inicializados e as migrações do banco de dados serão aplicadas automaticamente.
+Ao final da execução, as imagens Docker serão construídas, os testes serão executados e as migrações do banco de dados serão aplicadas automaticamente.
 
 Para exibir a lista de rotinas disponíveis, execute o comando `make` ou `make help`.
 
@@ -58,7 +58,7 @@ http://localhost:15672      (RabbitMQ Management)
 http://localhost:9001       (MinIO Console)
 ```
 
-* O modo debug é indicado para fase de desenvolvimento da aplicação, permitindo o uso de breakpoints a partir do "start" das configurações `Api: Launch` ou `Api: Attach` no `VSCode`.
+* O modo debug é indicado para fase de desenvolvimento da aplicação, permitindo o uso de breakpoints a partir do "start" das configurações `Api: Launch` ou `Api: Attach` no `VSCode`. Para isso, utilize `make run-development` ao invés de `make run`.
 
 # Autorização
 
@@ -114,7 +114,8 @@ Para gerar um token válido, acesse o site do JWT, altere a data de expiração 
                     │       └── Publica evento article.created no RabbitMQ
                     │
                     └── Atualiza status do Upload para COMPLETED
-                        (ou FAILED/PENDING em caso de erro, conforme retries)
+                        (ou FAILED em caso de erro na última tentativa,
+                        ou PENDING para nova tentativa nas anteriores)
 ```
 
 # Estrutura
@@ -127,24 +128,27 @@ publications-service/
 │   │   ├── exceptions/           # Exception handler e erros customizados
 │   │   ├── authorization.py      # Validação JWT
 │   │   ├── database.py           # Base repository
+│   │   ├── models.py             # Modelos SQLAlchemy
 │   │   ├── message_broker.py     # Publicação de eventos
 │   │   └── storage.py            # Upload e download no MinIO
 │   ├── modules/
 │   │   ├── publications/         # Controller, service, repository e schemas de publications e articles
 │   │   └── uploads/              # Controller, service, repository e schemas de uploads
-│   ├── routers/                  # Router global com prefixo e autenticação
 │   ├── utils/
 │   │   └── xml.py                # Parser de XMLs do DOU
+│   ├── router.py                 # Router global com prefixo e healthcheck
 │   ├── lifespan.py               # Inicialização e encerramento da aplicação
-│   ├── models.py                 # Modelos SQLAlchemy
 │   └── main.py                   # Entrypoint FastAPI
 ├── workers/
 │   └── create_publication.py     # Task Celery de processamento
+├── tests/
+│   └── unit/                     # Testes unitários
+├── .docs/                        # Coleção e ambientes do Postman
 ├── .infrastructure/
 │   ├── database/migrations/      # Migrações Alembic
 │   ├── docker/                   # Dockerfiles e Docker Compose
-│   └── monitoring/               # Configurações Prometheus e Grafana
-├── tests/
+│   ├── kubernetes/               # Configurações de deploy staging e production
+│   └── monitoring/               # Configurações Prometheus, Grafana, Loki, Tempo e Alloy
 ├── .env
 ├── Makefile
 └── pyproject.toml
@@ -153,6 +157,8 @@ publications-service/
 # Utilização
 
 O fluxo de uso da aplicação consiste no envio de um arquivo `.zip` contendo XMLs de publicações do Diário Oficial. O processamento ocorre de forma assíncrona e os dados extraídos ficam disponíveis para consulta assim que concluído.
+
+Os arquivos de coleção e ambientes disponibilizados no diretório `.docs` podem ser importados no [Postman](https://www.postman.com) para uso da aplicação em ambiente local.
 
 Envio de arquivo para processamento:
 ```
@@ -181,14 +187,66 @@ $ curl --location 'http://localhost:8000/publications/{publication_id}/articles'
 
 # Monitoramento
 
-A rota `/metrics` foi implementada para disponibilizar dados de instrumentação monitorados pelo `Prometheus`. Para ter acesso aos dashboards pré-configurados no `Grafana`, basta executar o comando `make monitoring` e acessar as urls abaixo:
+A forma mais direta de rodar a aplicação completa com monitoramento ativo é executar os três comandos abaixo em terminais separados:
+
+```
+$ make monitoring
+$ make run dockerized=true
+$ make run-worker dockerized=true
+```
+
+O `make monitoring` inicializa em background o stack completo de observabilidade: Prometheus, Grafana, Loki, Tempo e Alloy. A API e o worker sobem em foreground nos terminais seguintes, permitindo acompanhar os logs em tempo real.
+
+Após a inicialização, todos os recursos de monitoramento estarão disponíveis nas urls abaixo:
 
 ```
 http://localhost:3000  (Prometheus)
 http://localhost:3001  (Grafana)
+http://localhost:12345 (Alloy)
 ```
 
 * As urls podem levar alguns minutos para se tornarem acessíveis. O Grafana demora um pouco na primeira inicialização do container dockerizado.
+
+## Métricas
+
+A rota `/metrics` expõe dados de instrumentação da API coletados pelo Prometheus. No Grafana, o dashboard **PublicationsService** está pré-configurado e exibe os seguintes painéis em tempo real:
+
+```
+Requests per second        Errors per second
+Total requests per minute  Average response time [30s]
+Request duration p50       Request duration p90
+Requests under 500ms       Memory usage
+CPU usage
+```
+
+## Logs
+
+Os logs de todos os containers são coletados automaticamente pelo Alloy e enviados ao Loki. No Grafana, o dashboard de logs está pré-configurado na mesma pasta do dashboard de métricas. Para explorar os logs livremente, acesse **Explore**, selecione o datasource **Loki** e filtre pelo container desejado:
+
+```
+{service_name="api"}
+{service_name="worker"}
+```
+
+## Traces
+
+Os datasources Loki e Tempo estão correlacionados — logs que contenham um `traceID` exibem um link direto para o trace correspondente no Tempo, e vice-versa. Para explorar traces, acesse **Explore** e selecione o datasource **Tempo**.
+
+# Testes
+
+Para executar os testes, utilize os comandos abaixo:
+
+```
+$ make tests
+$ make tests dockerized=true
+$ make tests verbose=true
+```
+
+Para gerar relatório de cobertura:
+
+```
+$ make coverage
+```
 
 # Desenvolvimento Local
 
@@ -210,10 +268,9 @@ $ make dependencies
 # Melhorias Necessárias
 
 * Implementar versionamento de rotas
-* Implementar OpenTelemetry para log de fluxos críticos
+* Implementar OpenTelemetry para rastreamento de fluxos críticos
 * Implementar paginação em rotas que retornam listas
-* Incrementar documentação levando em consideração outros cenários de uso
-* Incrementar testes unitários e de integração
+* Incrementar testes levando em consideração outros cenários de uso
 * Melhorar recursos do exception handler
 * Adicionar run-worker-development no Dockerfile e compose.development.yml
 
@@ -230,4 +287,10 @@ $ make dependencies
 * [PostgreSQL](https://www.postgresql.org)
 * [Prometheus](https://prometheus.io)
 * [Grafana](https://grafana.com)
+* [Loki](https://grafana.com/oss/loki)
+* [Tempo](https://grafana.com/oss/tempo)
+* [Alloy](https://grafana.com/oss/alloy)
 * [Docker](https://docs.docker.com)
+* [Kubernetes](https://kubernetes.io/pt-br)
+* [Postman](https://www.postman.com)
+* [VSCode](https://code.visualstudio.com)
