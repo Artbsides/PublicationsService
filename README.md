@@ -1,4 +1,4 @@
-# publications-service
+# Publications Service - XMLParser
 
 Aplicação desenvolvida em [Python 3.14.2](https://python.org), focada na ingestão e disponibilização de publicações do Diário Oficial da União a partir de arquivos comprimidos.
 
