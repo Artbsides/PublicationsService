@@ -212,6 +212,7 @@ $ make dependencies
 * Implementar testes unitários e de integração
 * Incrementar documentação levando em consideração outros cenários de uso
 * Implementar versionamento de rotas
+* Implementar OpenTelementry para log de fluxos críticos
 * Melhorar recursos do exception handler
 
 # Principais Tecnologias Utilizadas

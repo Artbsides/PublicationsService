@@ -2,6 +2,7 @@ import boto3
 
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from mypy_boto3_s3 import S3Client
 

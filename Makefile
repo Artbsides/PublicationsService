@@ -122,11 +122,11 @@ run:  ## Run api - Parameters: dockerized=true
 	@if [ "$(dockerized)" = "true" ]; then
 		docker compose -f $(DOCKER_PATH)/compose.yml up api
 	else
-		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_HOST_PORT:-8000} --reload
+		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_PORT:-8000} --reload
 	fi
 
 run-debug:  ## Run debuggable dockerized api
-	@COMPOSE_DEVELOPMENT_COMMAND="python -m debugpy --listen ${APP_HOST}:5678 -m uvicorn app.main:app --host ${APP_HOST} --port ${APP_HOST_PORT} --reload" \
+	@COMPOSE_DEVELOPMENT_COMMAND="python -m debugpy --listen ${APP_HOST}:5678 -m uvicorn app.main:app --host ${APP_HOST} --port ${APP_PORT} --reload" \
 		docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml up api
 
 run-worker:  ## Run worker - Parameters: dockerized=true
