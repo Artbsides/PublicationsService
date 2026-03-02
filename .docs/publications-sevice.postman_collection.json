@@ -1,0 +1,726 @@
+{
+  "info": {
+    "_postman_id": "fa6676d7-fa97-46ab-924b-00e051eb74ca",
+    "name": "Publications Service",
+    "description": "Publications Service (XML Parser)\n\nAplicação para ingestão e disponibilização de publicações do Diário Oficial da União (DOU).\n\nPermite o upload de arquivos `.zip`, realiza a extração e o parse dos XMLs internos para coletar os metadados de cada publicação, persiste os dados mantendo o vínculo com o arquivo original e os expõe por meio de endpoints RESTful para consulta.\n\nAlém disso, a aplicação armazena os arquivos em um bucket e publica os registros extraídos em um tópico/fila via AMQP para processamento assíncrono.\n\nImplementação implementada em Python com FastAPI, versionamento em Git, execução via Docker, documentação e recursos de observabilidade para acompanhar o processamento em background (logs/métricas/healthchecks).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "4274276",
+    "_collection_link": "https://go.postman.co/collection/4274276-fa6676d7-fa97-46ab-924b-00e051eb74ca?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "uploads",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "b53cae27-d9f3-40e8-b054-f5f0a7a281ab",
+                  "src": "S01012026.zip"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{API_HOST}}/uploads",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "uploads"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "202 Accepted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "uuid": "b53cae27-d9f3-40e8-b054-f5f0a7a281ab",
+                      "src": "S01012026.zip"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{API_HOST}}/uploads",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "uploads"
+                  ]
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Sun, 01 Mar 2026 23:39:36 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "152"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"e9032c16-e1e9-4546-83b7-84c9efc28f6a\",\n    \"filename\": \"S01012026.zip\",\n    \"status\": \"PENDING\",\n    \"created_at\": \"2026-03-01T23:39:37.137163Z\",\n    \"updated_at\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "uploads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_HOST}}/uploads",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "uploads"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/uploads",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "uploads"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Sun, 01 Mar 2026 23:24:27 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "154"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": \"e6a6fe8c-9ab1-4a26-899e-77d9181a60d5\",\n        \"filename\": \"S01012026.zip\",\n        \"status\": \"PENDING\",\n        \"created_at\": \"2026-03-01T23:24:07.796747Z\",\n        \"updated_at\": null\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "uploads/:upload_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_HOST}}/uploads/:upload_id",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "uploads",
+                ":upload_id"
+              ],
+              "variable": [
+                {
+                  "key": "upload_id",
+                  "value": "9288c013-aaba-4f7f-ab00-03c705cdbc9a"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/uploads/:upload_id",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "uploads",
+                    ":upload_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "upload_id",
+                      "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Mon, 02 Mar 2026 02:20:31 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "152"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"9288c013-aaba-4f7f-ab00-03c705cdbc9e\",\n    \"filename\": \"S01012026.zip\",\n    \"status\": \"PENDING\",\n    \"created_at\": \"2026-03-02T02:20:17.141318Z\",\n    \"updated_at\": null\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/uploads/:upload_id",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "uploads",
+                    ":upload_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "upload_id",
+                      "value": "9288c013-aaba-4f7f-ab00-03c705cdbc9a"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Mon, 02 Mar 2026 02:31:17 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "41"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": {\n        \"message\": \"Resource not found\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Publications",
+      "item": [
+        {
+          "name": "publications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_HOST}}/publications",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "publications"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/publications",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "publications"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Sun, 01 Mar 2026 23:49:25 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "159"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"upload_id\": \"e9032c16-e1e9-4546-83b7-84c9efc28f6a\",\n        \"created_at\": \"2026-03-01T23:39:42.071681Z\",\n        \"updated_at\": null\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "publications/:publication_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_HOST}}/publications/:publication_id",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "publications",
+                ":publication_id"
+              ],
+              "variable": [
+                {
+                  "key": "publication_id",
+                  "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/publications/:publication_id",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "publications",
+                    ":publication_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "publication_id",
+                      "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Sun, 01 Mar 2026 23:50:19 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "157"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n    \"upload_id\": \"e9032c16-e1e9-4546-83b7-84c9efc28f6a\",\n    \"created_at\": \"2026-03-01T23:39:42.071681Z\",\n    \"updated_at\": null\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/publications/:publication_id",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "publications",
+                    ":publication_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "publication_id",
+                      "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Mon, 02 Mar 2026 02:31:37 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "41"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": {\n        \"message\": \"Resource not found\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "publications/:publication_id/articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_HOST}}/publications/:publication_id/articles",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "publications",
+                ":publication_id",
+                "articles"
+              ],
+              "variable": [
+                {
+                  "key": "publication_id",
+                  "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/publications/:publication_id/articles",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "publications",
+                    ":publication_id",
+                    "articles"
+                  ],
+                  "variable": [
+                    {
+                      "key": "publication_id",
+                      "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Sun, 01 Mar 2026 23:51:01 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "16205"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": \"d606e2f2-26ef-4eb6-a1fc-1e51724821a3\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236365\",\n            \"name\": \"PA NA 18539 CRG\",\n            \"artSize\": \"12\",\n            \"artType\": \"Portaria\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=49\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00041:00019:01094:00000:00000:00000:00000:00000:00000:00000:00054:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504647\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471661\",\n            \"numberPage\": \"49\",\n            \"artCategory\": \"Ministério de Portos e Aeroportos/Agência Nacional de Aviação Civil/Corregedoria\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:42.958101Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"3f08141d-ae10-452b-a276-508030cdba2e\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236368\",\n            \"name\": \"Extrato 2025-12-30 - Ato 20342 (\",\n            \"artSize\": \"12\",\n            \"artType\": \"Ato\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=12\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00014:00019:00014:00154:00000:00000:00000:00000:00000:00000:00006:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504648\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471662\",\n            \"numberPage\": \"12\",\n            \"artCategory\": \"Ministério das Comunicações/Agência Nacional de Telecomunicações/Superintendência de Fiscalização/Gerência Regional nos Estados do Paraná e Santa Catarina\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:43.465934Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"d791e4de-309b-4f15-b9fd-702b7bcf7b67\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236614\",\n            \"name\": \"_PUBLICACAO 87_001\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=19\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00033:00052:00005:00002:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504658\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471672\",\n            \"numberPage\": \"19\",\n            \"artCategory\": \"Ministério da Justiça e Segurança Pública/Secretaria Nacional de Justiça/Departamento de Migrações/Coordenação-Geral de Imigração Laboral\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:44.021499Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"865c7f3a-ab7d-42be-8615-5a6491b4fe60\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236617\",\n            \"name\": \"_PUBLICACAO 87_002\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=23\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00033:00052:00005:00002:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504658\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471672\",\n            \"numberPage\": \"23\",\n            \"artCategory\": \"Ministério da Justiça e Segurança Pública/Secretaria Nacional de Justiça/Departamento de Migrações/Coordenação-Geral de Imigração Laboral\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:46.897481Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"555e0e37-9199-427a-a9cc-41f9d1657fb6\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236620\",\n            \"name\": \"_PUBLICACAO 87_003\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=28\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00033:00052:00005:00002:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504658\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471672\",\n            \"numberPage\": \"28\",\n            \"artCategory\": \"Ministério da Justiça e Segurança Pública/Secretaria Nacional de Justiça/Departamento de Migrações/Coordenação-Geral de Imigração Laboral\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:46.919084Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"20729520-f5b1-42e8-8e4b-4c3ed9b55737\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236623\",\n            \"name\": \"_PUBLICACAO 87_004\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=32\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00033:00052:00005:00002:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504658\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471672\",\n            \"numberPage\": \"32\",\n            \"artCategory\": \"Ministério da Justiça e Segurança Pública/Secretaria Nacional de Justiça/Departamento de Migrações/Coordenação-Geral de Imigração Laboral\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:46.935079Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"d02bc0a7-0903-48e2-adcf-fd0281c06612\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236626\",\n            \"name\": \"_PUBLICACAO 87_005\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=37\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00033:00052:00005:00002:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504658\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471672\",\n            \"numberPage\": \"37\",\n            \"artCategory\": \"Ministério da Justiça e Segurança Pública/Secretaria Nacional de Justiça/Departamento de Migrações/Coordenação-Geral de Imigração Laboral\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:46.951154Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"f6108954-809a-4b48-8fc8-307d2d2e5909\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236629\",\n            \"name\": \"_PUBLICACAO 87_006\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=41\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00033:00052:00005:00002:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504658\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471672\",\n            \"numberPage\": \"41\",\n            \"artCategory\": \"Ministério da Justiça e Segurança Pública/Secretaria Nacional de Justiça/Departamento de Migrações/Coordenação-Geral de Imigração Laboral\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:46.967922Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"a42960d7-0e94-437b-b8a7-9a52ac15fa9d\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236443\",\n            \"name\": \"Atos 20142 20192\",\n            \"artSize\": \"12\",\n            \"artType\": \"Ato\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=12\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00014:00019:00016:00057:00000:00000:00000:00000:00000:00000:00006:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504630\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471691\",\n            \"numberPage\": \"12\",\n            \"artCategory\": \"Ministério das Comunicações/Agência Nacional de Telecomunicações/Superintendência de Outorga e Recursos à Prestação/Gerência de Outorga e Licenciamento de Estações\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:46.984684Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"be7d8998-9e37-4719-b157-cc1843541d39\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236539\",\n            \"name\": \"17944.005001.2025-50 - EMPRESA G\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=14\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00028:00001:00000:00000:00000:00000:00000:00000:00000:00000:00024:00004\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504681\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471715\",\n            \"numberPage\": \"14\",\n            \"artCategory\": \"Ministério da Fazenda/Gabinete do Ministro\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.000004Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"60ce9ea3-69c1-4244-a7d9-6b780943ddab\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236605\",\n            \"name\": \"17944.102609.2022-89 - Fundo de \",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=14\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00028:00001:00000:00000:00000:00000:00000:00000:00000:00000:00024:00005\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504729\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471723\",\n            \"numberPage\": \"14\",\n            \"artCategory\": \"Ministério da Fazenda/Gabinete do Ministro\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.015888Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"b30b8f06-a663-4acd-9237-384671b2cf6d\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47236503\",\n            \"name\": \"PR - DESPACHO 54312313 - 19739.1\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=16\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00029:00037:00038:00000:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504702\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471728\",\n            \"numberPage\": \"16\",\n            \"artCategory\": \"Ministério da Gestão e da Inovação em Serviços Públicos/Secretaria do Patrimônio da União/Superintendência no Paraná\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.034023Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"998a465f-bf12-44af-89ba-03859fcd636e\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47239381\",\n            \"name\": \"PORTARIA NORMATIVA 205 AGU Disci\",\n            \"artSize\": \"12\",\n            \"artType\": \"Portaria\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=1\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00006:00007:00000:00000:00000:00000:00000:00000:00000:00000:00054:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504807\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471859\",\n            \"numberPage\": \"1\",\n            \"artCategory\": \"Presidência da República/Advocacia-Geral da União\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.050170Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"885bdb65-d06d-42ff-ae34-128419244af3\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47240307\",\n            \"name\": \"PORTARIA INTERMINISTERIAL MPO.MF\",\n            \"artSize\": \"24\",\n            \"artType\": \"Portaria Interministerial\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=47\",\n            \"pubDate\": \"02/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00040:00001:00000:00000:00000:00000:00000:00000:00000:00000:00057:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11504853\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23471948\",\n            \"numberPage\": \"47\",\n            \"artCategory\": \"Ministério do Planejamento e Orçamento/Gabinete da Ministra\",\n            \"editionNumber\": \"1\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.065831Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"5f08b623-c60f-414b-8625-6a4df0ba1f22\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47242284\",\n            \"name\": \"Decisao Coren-PR 352 - Proposta \",\n            \"artSize\": \"12\",\n            \"artType\": \"Decisão\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=05/01/2026&jornal=515&pagina=84\",\n            \"pubDate\": \"05/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00071:00255:00000:00000:00000:00000:00000:00000:00000:00000:00018:00002\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11485789\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23443480\",\n            \"numberPage\": \"84\",\n            \"artCategory\": \"Entidades de Fiscalização do Exercício das Profissões Liberais/Conselho Regional de Enfermagem do Paraná\",\n            \"editionNumber\": \"2\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.080643Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"5d9d5222-463f-4975-9e7b-9c41b99a6e30\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47242302\",\n            \"name\": \"RO 3081\",\n            \"artSize\": \"12\",\n            \"artType\": \"Resolução\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=05/01/2026&jornal=515&pagina=42\",\n            \"pubDate\": \"05/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00047:00047:00000:00000:00000:00000:00000:00000:00000:00000:00064:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11487049\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23445618\",\n            \"numberPage\": \"42\",\n            \"artCategory\": \"Ministério da Saúde/Agência Nacional de Saúde Suplementar\",\n            \"editionNumber\": \"2\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.098283Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"b115f682-c4b3-4839-8926-4ec53d804646\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47242242\",\n            \"name\": \"RO 3084\",\n            \"artSize\": \"12\",\n            \"artType\": \"Resolução\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=05/01/2026&jornal=515&pagina=42\",\n            \"pubDate\": \"05/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00047:00047:00000:00000:00000:00000:00000:00000:00000:00000:00064:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11487049\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23445619\",\n            \"numberPage\": \"42\",\n            \"artCategory\": \"Ministério da Saúde/Agência Nacional de Saúde Suplementar\",\n            \"editionNumber\": \"2\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.114339Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"151708d2-cb97-4c8c-bf8b-fda4ce9cb809\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47242305\",\n            \"name\": \"RO 3085\",\n            \"artSize\": \"12\",\n            \"artType\": \"Resolução\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=05/01/2026&jornal=515&pagina=42\",\n            \"pubDate\": \"05/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00047:00047:00000:00000:00000:00000:00000:00000:00000:00000:00064:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11487049\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23445620\",\n            \"numberPage\": \"42\",\n            \"artCategory\": \"Ministério da Saúde/Agência Nacional de Saúde Suplementar\",\n            \"editionNumber\": \"2\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.129944Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"0a059adb-0577-4df5-aae6-271e09a69545\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47242254\",\n            \"name\": \"COM0017174_2025\",\n            \"artSize\": \"12\",\n            \"artType\": \"Decisão\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=05/01/2026&jornal=515&pagina=33\",\n            \"pubDate\": \"05/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00035:00056:00001:00000:00000:00000:00000:00000:00000:00000:00018:00000\",\n            \"artNotes\": \"ok\",\n            \"idOficio\": \"11491940\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23452580\",\n            \"numberPage\": \"33\",\n            \"artCategory\": \"Ministério de Minas e Energia/Petróleo Brasileiro S.A./Petrobrás\",\n            \"editionNumber\": \"2\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.147690Z\",\n        \"updated_at\": null\n    },\n    {\n        \"id\": \"6e7a0225-ecdb-488d-a9bc-8a0f73c013cd\",\n        \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n        \"metadata\": {\n            \"id\": \"47249222\",\n            \"name\": \"AC-200-ECT-00434720\",\n            \"artSize\": \"12\",\n            \"artType\": \"Despacho\",\n            \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=05/01/2026&jornal=515&pagina=9\",\n            \"pubDate\": \"05/01/2026\",\n            \"pubName\": \"DO1\",\n            \"artClass\": \"00014:00021:00000:00000:00000:00000:00000:00000:00000:00000:00024:00000\",\n            \"artNotes\": \"\",\n            \"idOficio\": \"11502645\",\n            \"highlight\": \"\",\n            \"idMateria\": \"23467904\",\n            \"numberPage\": \"9\",\n            \"artCategory\": \"Ministério das Comunicações/Empresa Brasileira de Correios e Telégrafos\",\n            \"editionNumber\": \"2\",\n            \"highlightType\": \"\",\n            \"highlightimage\": \"\",\n            \"highlightPriority\": \"\",\n            \"highlightimagename\": \"\"\n        },\n        \"created_at\": \"2026-03-01T23:39:47.162729Z\",\n        \"updated_at\": null\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "publications/:publication_id/articles/:article_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_HOST}}/publications/:publication_id/articles/:article_id",
+              "host": [
+                "{{API_HOST}}"
+              ],
+              "path": [
+                "publications",
+                ":publication_id",
+                "articles",
+                ":article_id"
+              ],
+              "variable": [
+                {
+                  "key": "publication_id",
+                  "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                },
+                {
+                  "key": "article_id",
+                  "value": "d606e2f2-26ef-4eb6-a1fc-1e51724821a3"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/publications/:publication_id/articles/:article_id",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "publications",
+                    ":publication_id",
+                    "articles",
+                    ":article_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "publication_id",
+                      "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                    },
+                    {
+                      "key": "article_id",
+                      "value": "d606e2f2-26ef-4eb6-a1fc-1e51724821a3"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Mon, 02 Mar 2026 00:00:17 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "783"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"d606e2f2-26ef-4eb6-a1fc-1e51724821a3\",\n    \"publication_id\": \"afd50f6f-bd87-425e-87b4-2eabcd21a30f\",\n    \"metadata\": {\n        \"id\": \"47236365\",\n        \"name\": \"PA NA 18539 CRG\",\n        \"artSize\": \"12\",\n        \"artType\": \"Portaria\",\n        \"pdfPage\": \"http://pesquisa.in.gov.br/imprensa/jsp/visualiza/index.jsp?data=02/01/2026&jornal=515&pagina=49\",\n        \"pubDate\": \"02/01/2026\",\n        \"pubName\": \"DO1\",\n        \"artClass\": \"00041:00019:01094:00000:00000:00000:00000:00000:00000:00000:00054:00000\",\n        \"artNotes\": \"\",\n        \"idOficio\": \"11504647\",\n        \"highlight\": \"\",\n        \"idMateria\": \"23471661\",\n        \"numberPage\": \"49\",\n        \"artCategory\": \"Ministério de Portos e Aeroportos/Agência Nacional de Aviação Civil/Corregedoria\",\n        \"editionNumber\": \"1\",\n        \"highlightType\": \"\",\n        \"highlightimage\": \"\",\n        \"highlightPriority\": \"\",\n        \"highlightimagename\": \"\"\n    },\n    \"created_at\": \"2026-03-01T23:39:42.958101Z\",\n    \"updated_at\": null\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_HOST}}/publications/:publication_id/articles/:article_id",
+                  "host": [
+                    "{{API_HOST}}"
+                  ],
+                  "path": [
+                    "publications",
+                    ":publication_id",
+                    "articles",
+                    ":article_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "publication_id",
+                      "value": "afd50f6f-bd87-425e-87b4-2eabcd21a30f"
+                    },
+                    {
+                      "key": "article_id",
+                      "value": "d606e2f2-26ef-4eb6-a1fc-1e51724821a3"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Mon, 02 Mar 2026 02:32:11 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "41"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": {\n        \"message\": \"Resource not found\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "jwt",
+    "jwt": [
+      {
+        "key": "secret",
+        "value": "d41d8cd98f00b204e9800998ecf8427e",
+        "type": "string"
+      },
+      {
+        "key": "addTokenTo",
+        "value": "header",
+        "type": "string"
+      },
+      {
+        "key": "algorithm",
+        "value": "HS256",
+        "type": "string"
+      },
+      {
+        "key": "isSecretBase64Encoded",
+        "value": false,
+        "type": "boolean"
+      },
+      {
+        "key": "payload",
+        "value": "{}",
+        "type": "string"
+      },
+      {
+        "key": "headerPrefix",
+        "value": "Bearer",
+        "type": "string"
+      },
+      {
+        "key": "queryParamKey",
+        "value": "token",
+        "type": "string"
+      },
+      {
+        "key": "header",
+        "value": "{}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

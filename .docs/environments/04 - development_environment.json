@@ -1,0 +1,16 @@
+{
+	"id": "90a322ce-699b-4918-aeaf-6f205ebffe1a",
+	"name": "02 - Development",
+	"values": [
+		{
+			"key": "API_HOST",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-03-02T18:27:03.091Z",
+	"_postman_exported_using": "Postman/12.0.1"
+}
