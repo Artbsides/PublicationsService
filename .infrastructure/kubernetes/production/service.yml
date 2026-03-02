@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+    name: publications-service
+    namespace: production-apps
+spec:
+    selector:
+        app: publications-service
+    type: LoadBalancer
+    ports:
+      - name: http
+        port: 8082
+        protocol: TCP
+        targetPort: 8000
