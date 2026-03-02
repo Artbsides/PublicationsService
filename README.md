@@ -215,6 +215,7 @@ $ make dependencies
 * Incrementar documentação levando em consideração outros cenários de uso
 * Incrementar testes unitários e de integração
 * Melhorar recursos do exception handler
+* Adicionar run-worker-development no Dockerfile e compose.development.yml
 
 # Principais Tecnologias Utilizadas
 

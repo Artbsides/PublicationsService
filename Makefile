@@ -110,6 +110,9 @@ database:  ## Run dockerized postgres database
 	@docker compose -f $(DOCKER_PATH)/compose.yml up postgres --wait
 
 	@sleep 5
+	@$(MAKE) database-migrations
+
+database-migrations:  ## Run dockerized postgres database migrations
 	@poetry run alembic upgrade head
 
 message-broker:  ## Run dockerized rabbitmq message broker
@@ -118,14 +121,14 @@ message-broker:  ## Run dockerized rabbitmq message broker
 monitoring:  ## Run dockerized monitoring
 	@docker compose -f $(DOCKER_PATH)/compose.yml up -d prometheus grafana loki tempo alloy --wait
 
-run:  ## Run api - Parameters: dockerized=true
+run: database  ## Run api - Parameters: dockerized=true
 	@if [ "$(dockerized)" = "true" ]; then
 		docker compose -f $(DOCKER_PATH)/compose.yml up api
 	else
 		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_PORT:-8000} --reload
 	fi
 
-run-development:  ## Run debuggable dockerized api
+run-development: database  ## Run debuggable dockerized api
 	@COMPOSE_DEVELOPMENT_COMMAND="python -m debugpy --listen ${APP_HOST}:5678 -m uvicorn app.main:app --host ${APP_HOST} --port ${APP_PORT} --reload" \
 		docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml up api
 
