@@ -1,0 +1,14 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+metadata:
+    name: publications-service-kustomization
+    namespace: production-apps
+resources:
+    - service.yml
+    - deployment.yml
+generators:
+    - secrets.yml
+generatorOptions:
+    labels:
+        deploy.type: kustomize
+    disableNameSuffixHash: true
