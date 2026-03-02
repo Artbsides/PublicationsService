@@ -1,7 +1,7 @@
 from pydantic import BaseModel as PydanticBaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import BaseModel
+from app.core.models import BaseModel
 from app.core.config.database.session import get_current_session
 
 

@@ -2,8 +2,8 @@ from alembic import context
 from sqlalchemy import pool, engine_from_config
 from logging.config import fileConfig
 
-from app.models import *
-from app.models import BaseModel
+from app.core.models import *
+from app.core.models import BaseModel
 from app.core.config.environment import settings
 
 

@@ -1,18 +1,20 @@
-from fastapi import Form, Depends, status
+from fastapi import Form, Depends, APIRouter, status
 
-from app.routers.router import router
+from app.core.authorization import Authorization
 from app.modules.uploads.service import UploadService
 from app.modules.uploads.schemas.dtos import UploadDto
 from app.modules.uploads.schemas.responses import UploadResponse
 
 
-router_settings = {
-    "tags": ["Uploads"],
-}
+router = APIRouter(
+    tags=["Uploads"], dependencies=[
+        Depends(Authorization())
+    ]
+)
 
 
 @router.post("/uploads",
-    **router_settings, status_code=status.HTTP_202_ACCEPTED
+    status_code=status.HTTP_202_ACCEPTED
 )
 async def create_upload(
     data: UploadDto.Upload = Form(), upload_service: UploadService = Depends()
@@ -20,12 +22,12 @@ async def create_upload(
     return await upload_service.create_upload(data)
 
 
-@router.get("/uploads",**router_settings,)
+@router.get("/uploads")
 async def retrieve_uploads(upload_service: UploadService = Depends()) -> list[UploadResponse.Read]:
     return await upload_service.retrieve_uploads()
 
 
-@router.get("/uploads/{upload_id}",**router_settings)
+@router.get("/uploads/{upload_id}")
 async def retrieve_upload(
     parameters: UploadDto.ReadOne = Depends(), upload_service: UploadService = Depends()
 ) -> UploadResponse.ReadOne:

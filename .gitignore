@@ -20,6 +20,7 @@ dist
 *Zone.Identifier
 
 .infrastructure/docker/volumes
+.infrastructure/kubernetes
 
 #
 # IGNORE EXCEPTIONS

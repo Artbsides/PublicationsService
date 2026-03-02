@@ -13,7 +13,7 @@ app = get_application()
 
 @app.task(
     bind=True,
-    max_retries=50,
+    max_retries=5,
     default_retry_delay=2,
     name="create_publication",
 )
@@ -29,4 +29,4 @@ def create_publication(self: Task, upload_id: UUID) -> None:
             )
         )
     except Exception as exception:
-        raise self.retry(exc=exception)
+        raise self.retry(exc=exception) from exception

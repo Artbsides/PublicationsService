@@ -1,12 +1,5 @@
-from typing import ClassVar
-from fastapi import status
-
-from app.core.exceptions.errors.base import BaseError
+from app.core.exceptions.errors.not_found import NotFoundError
 
 
-class NoResultFound(BaseError):
-    args: ClassVar[dict[str, str]] = {
-        "message": "Resource not found"
-    }
-
-    status_code = status.HTTP_404_NOT_FOUND
+class NoResultFound(NotFoundError):
+    ...

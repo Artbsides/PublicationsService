@@ -29,8 +29,8 @@ class ArticleDto:
     class ReadOne(BaseModel):
         model_config = ConfigDict(populate_by_name=True)
 
-        publication_id: UUID
-
         id: UUID = Field(
             alias="article_id"
         )
+
+        publication_id: UUID

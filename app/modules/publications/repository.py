@@ -1,6 +1,6 @@
 from sqlalchemy import insert, select
 
-from app.models import ArticleModel, PublicationModel
+from app.core.models import ArticleModel, PublicationModel
 from app.core.database import BaseRepository
 from app.modules.publications.schemas.dtos import ArticleDto, PublicationDto
 from app.modules.publications.schemas.entities import ArticleEntity, PublicationEntity

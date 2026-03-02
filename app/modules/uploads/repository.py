@@ -1,6 +1,6 @@
 from sqlalchemy import insert, select, update
 
-from app.models import UploadModel
+from app.core.models import UploadModel
 from app.core.database import BaseRepository
 from app.modules.uploads.schemas.dtos import UploadDto
 from app.modules.uploads.schemas.entities import UploadEntity
