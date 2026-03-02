@@ -1,76 +1,50 @@
-from uuid import UUID
+from sqlalchemy import insert, select
 
-from sqlalchemy import insert, select, update
-from sqlalchemy.orm import selectinload
-
-from app.enums import SourceFileStatusEnum
-from app.models import ArticleModel, PublicationModel, SourceFileModel
-from app.modules.publications.entities.article import ArticleEntity
-from app.modules.publications.entities.publication import PublicationEntity
-from app.modules.publications.entities.source_file import SourceFileEntity
-from app.utils.repository import BaseRepository
+from app.models import ArticleModel, PublicationModel
+from app.core.database import BaseRepository
+from app.modules.publications.schemas.dtos import ArticleDto, PublicationDto
+from app.modules.publications.schemas.entities import ArticleEntity, PublicationEntity
 
 
 class PublicationRepository(BaseRepository):
-    async def create(
-        self, *, filename: str, storage_key: str
-    ) -> SourceFileEntity:
-        query = (
-            insert(SourceFileModel).values(
-                filename=filename, storage_key=storage_key
-            )
-            .returning(SourceFileModel)
-        )
-
-        return self.to_entity(
-            SourceFileEntity, (await self.session.execute(query)).scalar_one()
-        )
-
-    async def read_one(
-        self, *, source_file_id: UUID, filters: dict | None = None
+    async def create_publication(
+        self, *, data: PublicationDto.Create
     ) -> PublicationEntity:
-        query = select(PublicationModel).where(PublicationModel.source_file_id == source_file_id)
-
-        if filters:
-            query = query.where(
-                *self.to_filters(PublicationModel, filters)
+        query = (
+            insert(PublicationModel).values(
+                data.model_dump(exclude_unset=True)
             )
+            .returning(PublicationModel)
+        )
 
         return self.to_entity(
             PublicationEntity, (await self.session.execute(query)).scalar_one()
         )
 
-    async def update(
-        self, *, source_file_id: UUID, values: dict, filters: dict | None = None
-    ) -> SourceFileEntity | None:
-        query = update(SourceFileModel).where(SourceFileModel.id == source_file_id)
+    async def retrieve_publications(self) -> list[PublicationEntity]:
+        query = select(PublicationModel)
 
-        if filters:
-            query = query.where(
-                *self.to_filters(SourceFileModel, filters)
-            )
-
-        query = query.values(values).returning(SourceFileModel)
-
-        return self.to_entity(
-            SourceFileEntity, (await self.session.execute(query)).scalar_one_or_none()
+        return self.to_entities(
+            PublicationEntity, (await self.session.execute(query)).scalars().all()
         )
 
-    async def create_publication(
-        self, *, source_file_id: UUID
+    async def retrieve_publication(
+        self, *, filters: PublicationDto.ReadOne
     ) -> PublicationEntity:
-        query = insert(PublicationModel).values(source_file_id=source_file_id).returning(PublicationModel)
+        query = select(PublicationModel).where(
+            *self.to_filters(PublicationModel, filters)
+        )
 
         return self.to_entity(
             PublicationEntity, (await self.session.execute(query)).scalar_one()
         )
 
     async def create_article(
-        self, *, publication_id: UUID, idempotency_key: UUID, data: dict
+        self, *, data: ArticleDto.Create
     ) -> ArticleEntity:
         query = (
             insert(ArticleModel).values(
-                publication_id=publication_id, idempotency_key=idempotency_key, data=data
+                data.model_dump(exclude_unset=True)
             )
             .returning(ArticleModel)
         )
@@ -79,34 +53,24 @@ class PublicationRepository(BaseRepository):
             ArticleEntity, (await self.session.execute(query)).scalar_one()
         )
 
-    async def retrieve_pubications(self) -> list[PublicationEntity]:
-        query = select(PublicationModel).options(
-            selectinload(PublicationModel.source_file)
-        )
-
-        return self.to_entities(
-            PublicationEntity, (await self.session.execute(query)).scalars().all()
-        )
-
-    async def retrieve_pubication(self, *, id: UUID) -> PublicationEntity:
-        query = (
-            select(PublicationModel).options(
-                selectinload(PublicationModel.source_file)
-            )
-            .where(
-                PublicationModel.id == id
-            )
-        )
-
-        return self.to_entity(
-            PublicationEntity, (await self.session.execute(query)).scalar_one()
-        )
-
-    async def retrieve_articles(self, *, publication_id: UUID) -> list[ArticleEntity]:
+    async def retrieve_articles(
+        self, *, filters: ArticleDto.Read
+    ) -> list[ArticleEntity]:
         query = select(ArticleModel).where(
-            ArticleModel.publication_id == publication_id
+            *self.to_filters(ArticleModel, filters)
         )
 
         return self.to_entities(
             ArticleEntity, (await self.session.execute(query)).scalars().all()
+        )
+
+    async def retrieve_article(
+        self, *, filters: ArticleDto.ReadOne
+    ) -> ArticleEntity:
+        query = select(ArticleModel).where(
+            *self.to_filters(ArticleModel, filters)
+        )
+
+        return self.to_entity(
+            ArticleEntity, (await self.session.execute(query)).scalar_one()
         )

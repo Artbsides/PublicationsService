@@ -1,10 +1,9 @@
 from datetime import datetime, timezone
+from sqlalchemy import Enum, String, DateTime, ForeignKey, text
+from sqlalchemy.orm import Mapped, DeclarativeBase, mapped_column
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, text
-from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-from app.enums import SourceFileStatusEnum
+from app.modules.uploads.schemas.enums import UploadStatusEnum
 
 
 class BaseModel(DeclarativeBase):
@@ -23,37 +22,29 @@ class BaseModel(DeclarativeBase):
     )
 
 
-class SourceFileModel(BaseModel):
-    __tablename__ = "source_files"
+class UploadModel(BaseModel):
+    __tablename__ = "uploads"
 
     filename: Mapped[str] = mapped_column(
         String(255), nullable=False
     )
 
     storage_key: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True
+        String(512), nullable=False, unique=True
     )
 
-    status: Mapped[SourceFileStatusEnum] = mapped_column(
-        Enum(SourceFileStatusEnum, name="source_file_status"), nullable=False, index=True, server_default=text(
-            f"'{SourceFileStatusEnum.PENDING.value}'"
+    status: Mapped[UploadStatusEnum] = mapped_column(
+        Enum(UploadStatusEnum, name="upload_status"), nullable=False, index=True, server_default=text(
+            f"'{UploadStatusEnum.PENDING.value}'"
         )
-    )
-
-    publication = relationship(
-        "PublicationModel", back_populates="source_file"
     )
 
 
 class PublicationModel(BaseModel):
     __tablename__ = "publications"
 
-    source_file_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("source_files.id", ondelete="RESTRICT"), index=True, unique=True, nullable=False
-    )
-
-    source_file = relationship(
-        "SourceFileModel", back_populates="publication"
+    upload_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("uploads.id", ondelete="RESTRICT"), index=True, unique=True, nullable=False
     )
 
 

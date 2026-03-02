@@ -1,70 +1,62 @@
 import io
-from uuid import NAMESPACE_DNS, UUID, uuid5
 import zipfile
+
+from uuid import UUID, NAMESPACE_DNS, uuid5
 from fastapi import Depends
 from psycopg.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
 
-from app.confs.broker import get_channel
-from app.confs.database.session import get_session
-from app.confs.workers import get_application
-from app.enums import SourceFileStatusEnum
-from app.models import SourceFileModel
-from app.modules.publications.dtos.article import ArticleDto
-from app.modules.publications.dtos.publication import PublicationDto
-from app.modules.publications.entities.article import ArticleEntity
-from app.modules.publications.entities.publication import PublicationEntity
+from app.utils.xml import parse_xml, generate_hash
+from app.core.storage import storage_download
+from app.core.message_broker import messaging_publish
+from app.core.config.environment import settings
+from app.modules.uploads.service import UploadService
+from app.core.config.database.session import get_session
+from app.modules.uploads.schemas.dtos import UploadDto
+from app.modules.uploads.schemas.enums import UploadStatusEnum
 from app.modules.publications.repository import PublicationRepository
-from app.utils.broker import publish
-from app.utils.bucket import download, upload
-from app.utils.xml import generate_hash, parse_xml
+from app.modules.publications.schemas.dtos import ArticleDto, PublicationDto
+from app.modules.publications.schemas.entities import ArticleEntity, PublicationEntity
 
 
 class PublicationService:
-    def __init__(self, publication_repository: PublicationRepository = Depends()) -> None:
+    def __init__(
+        self,
+        upload_service: UploadService = Depends(),
+        publication_repository: PublicationRepository = Depends()
+    ) -> None:
+        self.upload_service = upload_service
         self.publication_repository = publication_repository
 
-    async def create(
-        self, data: PublicationDto.Create
+    async def create_publication(
+        self, data: PublicationDto.Create, is_last_retry: bool | None = None
     ) -> None:
         async with get_session():
-            source_file = await self.publication_repository.create(
-                filename=data.file.filename, storage_key=upload(data.file)
+            upload = await self.upload_service.update_upload(
+                filters=UploadDto.Read(
+                    id=data.upload_id, status=UploadStatusEnum.PENDING
+                ),
+                data=UploadDto.Update(
+                    status=UploadStatusEnum.PROCESSING
+                )
             )
 
-        get_application().send_task(
-            "process_uploaded_file", args=[source_file.id]
-        )
-
-        return source_file
-
-    async def process_source_file(
-        self, source_file_id: UUID, is_last_retry: bool = False
-    ) -> None:
-        async with get_session():
-            source_file = await self.publication_repository.update(
-                source_file_id=source_file_id, filters={"status": SourceFileStatusEnum.PENDING}, values={
-                    "status": SourceFileStatusEnum.PROCESSING
-                }
-            )
-
-        if source_file:
+        if upload:
             try:
-                compressed_file = download(source_file.storage_key)
+                compressed_file = storage_download(upload.storage_key)
 
-                
                 try:
                     async with get_session():
                         publication = await self.publication_repository.create_publication(
-                            source_file_id=source_file.id
+                            data=PublicationDto.Create(upload_id=upload.id)
                         )
                 except IntegrityError as exception:
                     if not isinstance(exception.orig, UniqueViolation):
                         raise exception
 
                     async with get_session():
-                        publication = await self.publication_repository.read_one(
-                            source_file_id=source_file.id
+                        publication = await self.publication_repository.retrieve_publication(
+                            filters=PublicationDto.Read(upload_id=upload.id)
                         )
 
                 with zipfile.ZipFile(io.BytesIO(compressed_file)) as folder:
@@ -73,52 +65,64 @@ class PublicationService:
                     ]
 
                     for filename in xmls:
-                        data = parse_xml(
+                        parsed_xml = parse_xml(
                             folder.read(filename), filename
                         )
 
                         idempotency_key = uuid5(
-                            NAMESPACE_DNS, f"{publication.id}:{generate_hash(data)}"
+                            NAMESPACE_DNS, f"{publication.id}:{generate_hash(parsed_xml)}"
                         )
 
                         try:
                             async with get_session():
                                 article = await self.publication_repository.create_article(
-                                    publication_id=publication.id, idempotency_key=idempotency_key, data=data
+                                    data=ArticleDto.Create(
+                                        publication_id=publication.id, idempotency_key=idempotency_key, data=parsed_xml
+                                    )
                                 )
 
-                            await publish("article.created", article.data)
+                            await messaging_publish(
+                                "articles", "article.created", article.data
+                            )
                         except IntegrityError as exception:
                             if not isinstance(exception.orig, UniqueViolation):
                                 raise exception
 
                 async with get_session():
-                    await self.publication_repository.update(
-                        source_file_id=source_file.id, values={"status": SourceFileStatusEnum.COMPLETED}
+                    await self.upload_service.update_upload(
+                        filters=UploadDto.ReadOne(id=upload.id), data=UploadDto.Update(
+                            status=UploadStatusEnum.COMPLETED
+                        )
                     )
 
             except Exception as exception:
                 async with get_session():
-                    await self.publication_repository.update(
-                        source_file_id=source_file.id, values={
-                            "status": SourceFileStatusEnum.FAILED if is_last_retry else SourceFileStatusEnum.PENDING
-                        }
+                    await self.upload_service.update_upload(
+                        filters=UploadDto.ReadOne(id=upload.id), data=UploadDto.Update(
+                            status=UploadStatusEnum.FAILED if is_last_retry else UploadStatusEnum.PENDING
+                        )
                     )
 
                 raise exception
 
-    async def retrieve_pubications(self) -> list[PublicationEntity]:
+    async def retrieve_publications(self) -> list[PublicationEntity]:
         async with get_session():
-            return await self.publication_repository.retrieve_pubications()
+            return await self.publication_repository.retrieve_publications()
 
-    async def retrieve_pubication(self, parameters: PublicationDto.ReadOne) -> PublicationEntity:
+    async def retrieve_publication(self, parameters: PublicationDto.ReadOne) -> PublicationEntity:
         async with get_session():
-            return await self.publication_repository.retrieve_pubication(
-                id=parameters.id
+            return await self.publication_repository.retrieve_publication(
+                filters=parameters
             )
 
-    async def retrieve_articles(self, parameters: ArticleDto.Read) -> list[ArticleEntity]   :
+    async def retrieve_articles(self, parameters: ArticleDto.Read) -> list[ArticleEntity]:
         async with get_session():
             return await self.publication_repository.retrieve_articles(
-                publication_id=parameters.publication_id
+                filters=parameters
+            )
+
+    async def retrieve_article(self, parameters: ArticleDto.Read) -> ArticleEntity:
+        async with get_session():
+            return await self.publication_repository.retrieve_article(
+                filters=parameters
             )

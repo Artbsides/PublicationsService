@@ -34,7 +34,7 @@
             "request": "launch",
             "module": "celery",
             "args": [
-                "-A", "workers.process_uploaded_file.app", "worker", "--loglevel=info", "--concurrency=2", "-E",
+                "-A", "workers.create_publication.app", "worker", "--loglevel=info", "--concurrency=2", "-E",
             ],
             "jinja": true,
             "justMyCode": true

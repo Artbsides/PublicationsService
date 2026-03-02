@@ -1,9 +1,10 @@
-import hashlib
 import json
+import hashlib
+
 from xml.etree import ElementTree
 
 
-def parse_xml(file: bytes, filename: str):
+def parse_xml(file: bytes, filename: str) -> dict:
     root = ElementTree.fromstring(file.lstrip(b"\xef\xbb\xbf"))
 
     if article := root if root.tag == "article" else root.find("article"):

@@ -1,11 +1,11 @@
 FROM python:3.14.2-alpine AS development
 
-WORKDIR /app
+WORKDIR /publications-service
 
 COPY pyproject.toml poetry.lock ./
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir poetry && \
+    pip install --no-cache-dir poetry debugpy && \
     pip install poetry-plugin-export
 
 RUN poetry export --output requirements.txt --with-credentials --no-interaction
@@ -16,17 +16,18 @@ RUN pip install -r requirements.development.txt --require-hashes --no-cache-dir 
 
 COPY . .
 
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/publications-service
 
 FROM python:3.14.2-alpine
 
-WORKDIR /app
+WORKDIR /publications-service
 
 RUN addgroup -S appgroup && \
     adduser -S appuser -G appgroup
 
-COPY --chown=appuser --from=development /app/requirements.txt .
-COPY --chown=appuser --from=development /app/app ./app
+COPY --chown=appuser --from=development /publications-service/requirements.txt .
+COPY --chown=appuser --from=development /publications-service/app ./app
+COPY --chown=appuser --from=development /publications-service/workers ./workers
 
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt --require-hashes --no-cache-dir
@@ -38,6 +39,6 @@ USER appuser
 ENV APP_HOST=${APP_HOST:-0.0.0.0} \
     APP_PORT=${APP_PORT:-8000}
 
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/publications-service
 
 CMD ["sh", "-c", "uvicorn app.main:app --host=${APP_HOST} --port=${APP_PORT} --workers=4 --loop uvloop --http httptools"]

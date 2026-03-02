@@ -36,41 +36,120 @@ help:
 
 
 build: stop  ## Build dockerized images, run tests and code convention
-	@docker compose -f $(DOCKER_PATH)/compose.yaml build
-	@docker compose -f $(DOCKER_PATH)/compose.yaml -f $(DOCKER_PATH)/compose.development.yaml build
+	@docker compose -f $(DOCKER_PATH)/compose.yml build
+	@docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml build
 
-	@$(MAKE) bucket
-	@$(MAKE) database
-	@$(MAKE) message-broker
+	@$(MAKE) tests dockerized=true
+	@$(MAKE) code-convention dockerized=true
 
-# @$(MAKE) tests dockerized=true
-# @$(MAKE) code-convention dockerized=true
+dependencies:  ## Resolve dependencies for local development
+	@poetry --version &> /dev/null || pip3 install poetry
 
-bucket:  ## Run dockerized bucket message broker
-	@docker compose --project-directory $(DOCKER_PATH) up minio minio-buckets --wait
+	@poetry config virtualenvs.in-project true
+	@poetry env use $(shell pyenv which python 2>/dev/null || which python3)
+
+	@poetry lock
+	@poetry install
+
+tests: -B  ## Run tests - Parameters: dockerized=true, verbose=true
+	POETRY_RUN=""
+	DOCKER_COMPOSE=""
+
+	@if [ "$(dockerized)" = "true" ]; then
+		DOCKER_COMPOSE="docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml run -e APP_ENVIRONMENT=tests --rm shell"
+	else
+		POETRY_RUN="poetry run"
+	fi
+
+	APP_ENVIRONMENT=tests $$DOCKER_COMPOSE $$POETRY_RUN pytest $(if $(filter "$(verbose)", "true"),-sxvv,)
+
+tests-debug: -B  ## Run debuggable tests - Parameters: dockerized=true, verbose=true
+	POETRY_RUN=""
+	DOCKER_COMPOSE=""
+
+	@if [ "$(dockerized)" = "true" ]; then
+		DOCKER_COMPOSE="docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml run -e APP_ENVIRONMENT=tests --service-ports --rm shell"
+	else
+		POETRY_RUN="poetry run"
+	fi
+
+	echo "==== Ready to attach to port 5789..."
+
+	APP_ENVIRONMENT=tests PYDEVD_DISABLE_FILE_VALIDATION=true $$DOCKER_COMPOSE $$POETRY_RUN python \
+		-m debugpy --listen ${APP_HOST}:5678 --wait-for-client -m pytest $(if $(filter "$(verbose)", "true"),-sxvv,)
+
+coverage:  ## Run tests and write reports - Parameters: dockerized=true
+	POETRY_RUN=""
+	DOCKER_COMPOSE=""
+
+	@if [ "$(dockerized)" = "true" ]; then
+		DOCKER_COMPOSE="docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml run -e APP_ENVIRONMENT=tests --rm shell"
+	else
+		POETRY_RUN="poetry run"
+	fi
+
+	APP_ENVIRONMENT=tests $$DOCKER_COMPOSE $$POETRY_RUN pytest --cov-report=html:tests/reports
+
+code-convention:  ## Run code convention - Parameters: dockerized=true, fix-imports=true, github=true
+	POETRY_RUN=""
+	DOCKER_COMPOSE=""
+
+	@if [ "$(dockerized)" = "true" ]; then
+		DOCKER_COMPOSE="docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml run --rm shell"
+	else
+		POETRY_RUN="poetry run"
+	fi
+
+	$$DOCKER_COMPOSE $$POETRY_RUN ruff check . $(if $(filter "$(github)", "true"),--output-format github,)
+	$$DOCKER_COMPOSE $$POETRY_RUN isort $(if $(filter "$(fix-imports)", "true"),,--check) . -q
+
+storage:  ## Run dockerized storage message broker
+	@docker compose -f $(DOCKER_PATH)/compose.yml up minio minio-buckets --detach
 
 database:  ## Run dockerized postgres database
-	@docker compose --project-directory $(DOCKER_PATH) up postgres --wait
+	@docker compose -f $(DOCKER_PATH)/compose.yml up postgres --wait
 
 	@sleep 5
 	@poetry run alembic upgrade head
 
 message-broker:  ## Run dockerized rabbitmq message broker
-	@docker compose --project-directory $(DOCKER_PATH) up rabbitmq --wait
+	@docker compose -f $(DOCKER_PATH)/compose.yml up rabbitmq --wait
 
-run:  ## Run dockerized api - Parameters: dockerized=true
+monitoring:  ## Run dockerized monitoring
+	@docker compose -f $(DOCKER_PATH)/compose.yml up -d prometheus grafana loki tempo alloy --wait
+
+run:  ## Run api - Parameters: dockerized=true
 	@if [ "$(dockerized)" = "true" ]; then
-		docker compose up api
+		docker compose -f $(DOCKER_PATH)/compose.yml up api
 	else
 		poetry run uvicorn app.main:app --host $${APP_HOST:-127.0.0.1} --port $${APP_HOST_PORT:-8000} --reload
 	fi
 
-run-worker:  ## Run dockerized worker - Parameters: dockerized=true
+run-debug:  ## Run debuggable dockerized api
+	@COMPOSE_DEVELOPMENT_COMMAND="python -m debugpy --listen ${APP_HOST}:5678 -m uvicorn app.main:app --host ${APP_HOST} --port ${APP_HOST_PORT} --reload" \
+		docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml up api
+
+run-worker:  ## Run worker - Parameters: dockerized=true
 	@if [ "$(dockerized)" = "true" ]; then
-		docker compose up worker
+		docker compose -f $(DOCKER_PATH)/compose.yml up worker
 	else
-		poetry run celery -A workers.process_uploaded_file.app worker --loglevel=info --concurrency=2
+		poetry run celery -A workers.create_publication.app worker --loglevel=info --concurrency=2
 	fi
+
+run-shell:  ## Run debuggable dockerized api terminal - Parameters: environment=staging|production
+	SHELL="run --rm shell"
+
+	@if [ "$(environment)" = "staging" ]; then
+		docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml $$SHELL
+	elif [ "$(environment)" = "production" ]; then
+		docker compose -f $(DOCKER_PATH)/compose.yml $$SHELL
+	else
+		echo "==== Environment not found."
+	fi
+
+stop:  ## Stop all dockerized services
+	@docker compose -f $(DOCKER_PATH)/compose.yml down --volumes
+
 
 %:
 	@:

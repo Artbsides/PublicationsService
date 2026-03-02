@@ -1,0 +1,10 @@
+groups:
+  - name: PublicationsService Alerts
+    rules:
+      - alert: ApiHealth
+        expr: up{job="PublicationsService"} < 1
+        for: 5s
+        labels:
+            severity: critical
+        annotations:
+            summary: Api HealthCheck
