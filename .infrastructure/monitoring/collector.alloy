@@ -1,24 +1,43 @@
-discovery.docker "containers" {
+prometheus.exporter.cadvisor "example" {
+    docker_host     = "unix:///var/run/docker.sock"
+    storage_duration = "30m"
+}
+
+prometheus.scrape "scraper" {
+    targets         = prometheus.exporter.cadvisor.example.targets
+    forward_to      = [ prometheus.remote_write.demo.receiver ]
+    scrape_interval = "10s"
+}
+
+prometheus.remote_write "demo" {
+    endpoint {
+        url = "http://prometheus:9090/api/v1/write"
+    }
+}
+
+discovery.docker "linux" {
     host = "unix:///var/run/docker.sock"
 }
 
-loki.source.docker "logs" {
-    host       = "unix:///var/run/docker.sock"
-    targets    = discovery.docker.containers.targets
-    forward_to = [loki.relabel.containers.receiver]
-}
+discovery.relabel "logs_integrations_docker" {
+    targets = []
 
-loki.relabel "containers" {
     rule {
         source_labels = ["__meta_docker_container_name"]
-        target_label  = "container"
         regex         = "/(.*)"
+        target_label  = "service_name"
     }
-
-    forward_to = [loki.write.default.receiver]
 }
 
-loki.write "default" {
+loki.source.docker "default" {
+    host         = "unix:///var/run/docker.sock"
+    targets      = discovery.docker.linux.targets
+    labels       = {"platform" = "docker"}
+    relabel_rules= discovery.relabel.logs_integrations_docker.rules
+    forward_to   = [ loki.write.local.receiver ]
+}
+
+loki.write "local" {
     endpoint {
         url = "http://loki:3100/loki/api/v1/push"
     }

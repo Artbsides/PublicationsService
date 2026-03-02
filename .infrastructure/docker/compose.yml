@@ -112,6 +112,9 @@ services:
     loki:
         image: grafana/loki:3.6.6
         container_name: loki
+        user: 0:0
+        volumes:
+            - ./volumes/loki:/loki
         ports:
             - ${LOKI_PORT:-3100}:3100
 
@@ -121,6 +124,7 @@ services:
         command: -config.file=/etc/tempo/tempo.yml
         volumes:
             - ./../monitoring/tempo.yml:/etc/tempo/tempo.yml
+            - ./volumes/tempo:/var/lib/tempo
         ports:
             - ${TEMPO_PORT:-3200}:3200
             - ${TEMPO_RECEIVER_GRPC_PORT:-4317}:4317
@@ -131,8 +135,8 @@ services:
         container_name: alloy
         command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
             - ./../monitoring/collector.alloy:/etc/alloy/config.alloy
+            - /var/run/docker.sock:/var/run/docker.sock
         depends_on:
             - loki
             - tempo

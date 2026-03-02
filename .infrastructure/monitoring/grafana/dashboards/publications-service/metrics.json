@@ -970,10 +970,11 @@
     "schemaVersion": 37,
     "style": "dark",
     "tags": [
-        "publications-service",
         "python",
         "fastapi",
-        "prometheus"
+        "prometheus",
+        "publications-service",
+        "metrics"
     ],
     "templating": {
         "list": []

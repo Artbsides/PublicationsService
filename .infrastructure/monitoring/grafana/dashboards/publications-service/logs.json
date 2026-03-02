@@ -1,0 +1,34 @@
+{
+    "id": null,
+    "uid": "_eA2mbw4",
+    "title": "API + Worker Logs",
+    "tags": [
+        "python",
+        "fastapi",
+        "prometheus",
+        "publications-service",
+        "logs"
+    ],
+    "timezone": "browser",
+    "panels": [
+        {
+            "type": "logs",
+            "title": "API + Worker Logs",
+            "datasource": "Loki",
+            "gridPos": { "x": 0, "y": 0, "w": 24, "h": 12 },
+            "targets": [
+                {
+                "expr": "{service_name=~\"api|worker\"}",
+                "refId": "A"
+                }
+            ],
+            "options": {
+                "showLabels": true,
+                "showTime": true,
+                "wrapLogMessage": false
+            }
+        }
+    ],
+    "schemaVersion": 37,
+    "version": 1
+}
