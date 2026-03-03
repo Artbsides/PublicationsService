@@ -273,7 +273,7 @@ $ make dependencies
 * Incrementar testes levando em consideração outros cenários de uso
 * Melhorar recursos do exception handler
 * Adicionar run-worker-development no Dockerfile e compose.development.yml
-* Ajustar serviço ArgoCD.Deployment para dar suporte ao worker
+* Ajustar serviço interno [ArgoCD.Deployment](https://github.com/Artbsides/ArgoCD.Deployment) para dar suporte ao worker
 
 # Principais Tecnologias Utilizadas
 
