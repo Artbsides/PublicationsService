@@ -273,7 +273,7 @@ $ make dependencies
 * Incrementar testes levando em consideração outros cenários de uso
 * Melhorar recursos do exception handler
 * Adicionar run-worker-development no Dockerfile e compose.development.yml
-* Adiconar entrada do worker nas configurações do Kubernetes
+* Ajustar serviço ArgoCD.Deployment para dar suporte ao worker
 
 # Principais Tecnologias Utilizadas
 

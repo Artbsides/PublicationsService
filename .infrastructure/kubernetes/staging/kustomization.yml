@@ -5,7 +5,8 @@ metadata:
     namespace: staging-apps
 resources:
     - service.yml
-    - deployment.yml
+    - deployments/app.yml
+    - deployments/worker.yml
 generators:
     - secrets.yml
 generatorOptions:
