@@ -1,6 +1,6 @@
 [project]
 name = "publications-service"
-version = "0.0.1"
+version = "0.0.2"
 description = "Service for ingesting and querying Brazilian official gazette publications."
 authors = [
     {name = "RempelOliveira", email = "rempel.oliveira@gmail.com"}

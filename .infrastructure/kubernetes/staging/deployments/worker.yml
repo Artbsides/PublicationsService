@@ -15,7 +15,7 @@ spec:
         spec:
             containers:
               - name: publications-service-worker
-                image: docker.io/rempeloliveira/public:publications-service.0.0.1-staging
+                image: docker.io/rempeloliveira/public:publications-service.0.0.2-staging
                 imagePullPolicy: Always
                 command: ["celery", "-A", "workers.create_publication.app", "worker", "--loglevel=info", "--concurrency=2"]
                 envFrom:

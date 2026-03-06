@@ -15,7 +15,7 @@ spec:
         spec:
             containers:
               - name: publications-service
-                image: docker.io/rempeloliveira/public:publications-service.0.0.1
+                image: docker.io/rempeloliveira/public:publications-service.0.0.2
                 imagePullPolicy: Always
                 ports:
                   - containerPort: 8000

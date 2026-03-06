@@ -35,6 +35,9 @@ help:
 	@$(PYTHON) -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 
+version:  ## Read or update api version - Parameters: update-to=[0-9].[0-9].[0-9]
+	@poetry version $(if $(update-to), $(update-to), -s)
+
 build: stop  ## Build dockerized images, run tests and code convention
 	@docker compose -f $(DOCKER_PATH)/compose.yml build
 	@docker compose -f $(DOCKER_PATH)/compose.yml -f $(DOCKER_PATH)/compose.development.yml build
