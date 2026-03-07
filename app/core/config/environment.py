@@ -51,6 +51,10 @@ class BaseConfig:
         default="127.0.0.1", cast=str
     )
 
+    STORAGE_PORT = config("STORAGE_PORT",
+        default=9000, cast=int
+    )
+
     STORAGE_USER = config("STORAGE_USER",
         default="", cast=str
     )
