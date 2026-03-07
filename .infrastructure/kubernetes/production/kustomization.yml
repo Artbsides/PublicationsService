@@ -5,8 +5,8 @@ metadata:
     namespace: production-apps
 resources:
     - service.yml
-    - deployment/app.yml
-    - deployment/worker.yml
+    - deployments/app.yml
+    - deployments/worker.yml
 generators:
     - secrets.yml
 generatorOptions:
