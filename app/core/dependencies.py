@@ -1,4 +1,4 @@
-from dishka import make_async_container, make_container
+from dishka import make_container, make_async_container
 from dishka.integrations.fastapi import FastapiProvider
 
 from app.modules.uploads.dependencies import UploadProvider

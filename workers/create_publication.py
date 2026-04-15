@@ -1,6 +1,6 @@
 from uuid import UUID
-from dishka.integrations.celery import DishkaTask, FromDishka
 from celery import Task
+from dishka.integrations.celery import DishkaTask, FromDishka
 
 from app.core.config.worker import run_async, get_application
 from app.modules.publications.service import PublicationService

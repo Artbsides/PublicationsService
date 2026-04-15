@@ -1,6 +1,5 @@
-from dishka import Provider, Scope, provide_all
+from dishka import Scope, Provider, provide_all
 
-from app.modules.publications.repository import PublicationRepository
 from app.modules.publications.service import PublicationService
 
 

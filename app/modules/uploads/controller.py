@@ -1,6 +1,6 @@
 from typing import Annotated
-from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import Form, Depends, APIRouter, status
+from dishka.integrations.fastapi import FromDishka, DishkaRoute
 
 from app.core.authorization import Authorization
 from app.modules.uploads.service import UploadService

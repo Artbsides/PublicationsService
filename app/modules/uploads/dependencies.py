@@ -1,6 +1,5 @@
-from dishka import Provider, Scope, provide_all
+from dishka import Scope, Provider, provide_all
 
-from app.modules.uploads.repository import UploadRepository
 from app.modules.uploads.service import UploadService
 
 

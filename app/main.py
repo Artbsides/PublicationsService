@@ -1,13 +1,12 @@
-from dishka.integrations.fastapi import setup_dishka
-
 from fastapi import FastAPI, HTTPException
 from pydantic import ValidationError
 from fastapi.exceptions import RequestValidationError
+from dishka.integrations.fastapi import setup_dishka
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from app.core.dependencies import build_container
 from app.router import router
 from app.lifespan import lifespan
+from app.core.dependencies import build_container
 from app.core.config.environment import settings
 from app.core.exceptions.exception_handler import ExceptionHandler
 

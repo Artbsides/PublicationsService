@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from dishka.integrations.fastapi import DishkaRoute, FromDishka
+from dishka.integrations.fastapi import FromDishka, DishkaRoute
 
 from app.core.authorization import Authorization
 from app.modules.publications.service import PublicationService
