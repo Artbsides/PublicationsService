@@ -1,7 +1,8 @@
 import pytest
+import inspect
 
 from uuid import uuid4
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 from celery.exceptions import Retry
 
 from workers.create_publication import create_publication
@@ -15,6 +16,10 @@ class TestWorker:
         mock_create_publication: MagicMock,
         mock_run_async: MagicMock,
     ) -> None:
+        mock_run_async.side_effect = lambda coroutine: (
+            inspect.iscoroutine(coroutine) and coroutine.close()
+        )
+
         upload_id = uuid4()
 
         create_publication(upload_id)
@@ -38,7 +43,10 @@ class TestWorker:
         mock_run_async: MagicMock,
     ) -> None:
         mock_retry.side_effect = Retry()
-        mock_run_async.side_effect = Exception()
+        mock_run_async.side_effect = lambda coroutine: (
+            inspect.iscoroutine(coroutine) and coroutine.close(),
+                (_ for _ in ()).throw(Exception()),
+        )[1]
 
         upload_id = uuid4()
 
