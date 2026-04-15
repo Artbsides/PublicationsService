@@ -1,5 +1,3 @@
-from fastapi import Depends
-
 from app.core.storage import storage_upload
 from app.core.config.worker import get_application
 from app.modules.uploads.repository import UploadRepository
@@ -9,7 +7,7 @@ from app.modules.uploads.schemas.entities import UploadEntity
 
 
 class UploadService:
-    def __init__(self, upload_repository: UploadRepository = Depends()) -> None:
+    def __init__(self, upload_repository: UploadRepository) -> None:
         self.upload_repository = upload_repository
 
     async def create_upload(

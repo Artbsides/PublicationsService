@@ -2,7 +2,6 @@ import io
 import zipfile
 
 from uuid import NAMESPACE_DNS, uuid5
-from fastapi import Depends
 from psycopg.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
 
@@ -21,8 +20,8 @@ from app.modules.publications.schemas.entities import ArticleEntity, Publication
 class PublicationService:
     def __init__(
         self,
-        upload_service: UploadService = Depends(),
-        publication_repository: PublicationRepository = Depends()
+        upload_service: UploadService,
+        publication_repository: PublicationRepository
     ) -> None:
         self.upload_service = upload_service
         self.publication_repository = publication_repository

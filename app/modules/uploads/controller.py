@@ -1,4 +1,5 @@
 from typing import Annotated
+from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import Form, Depends, APIRouter, status
 
 from app.core.authorization import Authorization
@@ -8,7 +9,7 @@ from app.modules.uploads.schemas.responses import UploadResponse
 
 
 router = APIRouter(
-    tags=["Uploads"], dependencies=[
+    tags=["Uploads"], route_class=DishkaRoute, dependencies=[
         Depends(Authorization())
     ]
 )
@@ -18,18 +19,18 @@ router = APIRouter(
     status_code=status.HTTP_202_ACCEPTED
 )
 async def create_upload(
-    data: Annotated[UploadDto.Upload, Form()], upload_service: UploadService = Depends()
+    upload_service: FromDishka[UploadService], data: Annotated[UploadDto.Upload, Form()]
 ) -> UploadResponse.Create:
     return await upload_service.create_upload(data)
 
 
 @router.get("/uploads")
-async def retrieve_uploads(upload_service: UploadService = Depends()) -> list[UploadResponse.Read]:
+async def retrieve_uploads(upload_service: FromDishka[UploadService]) -> list[UploadResponse.Read]:
     return await upload_service.retrieve_uploads()
 
 
 @router.get("/uploads/{upload_id}")
 async def retrieve_upload(
-    parameters: UploadDto.ReadOne = Depends(), upload_service: UploadService = Depends()
+    upload_service: FromDishka[UploadService], parameters: UploadDto.ReadOne = Depends()
 ) -> UploadResponse.ReadOne:
     return await upload_service.retrieve_upload(parameters)
