@@ -34,7 +34,7 @@
             "request": "launch",
             "module": "celery",
             "args": [
-                "-A", "workers.create_publication.app", "worker", "--loglevel=info", "--concurrency=2", "-E",
+                "-A", "app.core.config.worker:app", "worker", "--loglevel=info", "--concurrency=2", "-E",
             ],
             "jinja": true,
             "justMyCode": true

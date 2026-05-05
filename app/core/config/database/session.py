@@ -38,11 +38,12 @@ async def get_session() -> AsyncGenerator[AsyncSession]:
                 async_session.reset(token)
 
 
-def get_current_session() -> AsyncSession:
+async def get_current_session() -> AsyncSession:
     current_session = async_session.get()
 
     if current_session is None:
-        raise RuntimeError("No active DB session in context")
+        async with get_session() as session:
+            return session
 
     return current_session
 

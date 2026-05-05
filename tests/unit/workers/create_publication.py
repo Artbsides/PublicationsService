@@ -1,4 +1,5 @@
 import pytest
+import asyncio
 import inspect
 
 from uuid import uuid4
@@ -16,9 +17,7 @@ class TestWorker:
         mock_create_publication: MagicMock,
         mock_run_async: MagicMock,
     ) -> None:
-        mock_run_async.side_effect = lambda coroutine: (
-            inspect.iscoroutine(coroutine) and coroutine.close()
-        )
+        mock_run_async.side_effect = asyncio.run
 
         upload_id = uuid4()
 

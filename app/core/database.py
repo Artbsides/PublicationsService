@@ -2,13 +2,11 @@ from pydantic import BaseModel as PydanticBaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models import BaseModel
-from app.core.config.database.session import get_current_session
 
 
 class BaseRepository:
-    @property
-    def session(self) -> AsyncSession:
-        return get_current_session()
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
 
     def to_filters(
         self, model: BaseModel, data: PydanticBaseModel

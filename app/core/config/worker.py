@@ -4,7 +4,6 @@ from celery import Celery
 from functools import lru_cache
 from celery.signals import worker_process_init, worker_process_shutdown
 from collections.abc import Coroutine
-from dishka.integrations.celery import setup_dishka
 
 from app.core.config.environment import settings
 
@@ -36,8 +35,6 @@ def run_async(coroutine: Coroutine) -> None:
 
 @lru_cache
 def get_application() -> Celery:
-    from app.core.dependencies import build_worker_container
-
     uri = (
         f"{settings.MESSAGE_BROKER_USER}:{settings.MESSAGE_BROKER_PASSWORD}@"
         f"{settings.MESSAGE_BROKER_HOST}:{settings.MESSAGE_BROKER_PORT}"
@@ -47,8 +44,9 @@ def get_application() -> Celery:
         "publications-service", broker=f"amqp://{uri}//"
     )
 
-    setup_dishka(
-        build_worker_container(), app
-    )
+    app.autodiscover_tasks(packages=["workers"])
 
     return app
+
+
+app = get_application()

@@ -1,21 +1,26 @@
-from dishka import make_container, make_async_container
+from dishka import Scope, AsyncContainer, make_async_container
+from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
 from dishka.integrations.fastapi import FastapiProvider
 
+from app.core.config.dependencies import QueueProvider, DatabaseProvider
 from app.modules.uploads.dependencies import UploadProvider
 from app.modules.publications.dependencies import PublicationProvider
 
 
 providers = (
+    DatabaseProvider(),
+    QueueProvider(),
     PublicationProvider(),
     UploadProvider(),
 )
 
 
-def build_container():
-    return make_async_container(
-        FastapiProvider(), *providers
-    )
+def build_container() -> AsyncContainer:
+    return make_async_container(FastapiProvider(), *providers)
 
 
-def build_worker_container():
-    return make_container(*providers)
+@asynccontextmanager
+async def build_worker_container() -> AsyncGenerator[AsyncContainer]:
+    async with make_async_container(*providers)(scope=Scope.REQUEST) as container:
+        yield container
